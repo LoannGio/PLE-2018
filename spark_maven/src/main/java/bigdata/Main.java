@@ -7,9 +7,9 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		SparkConf conf = new SparkConf().setAppName("TP Spark");
-		JavaSparkContext context = new JavaSparkContext(conf);
-		
+		//parkConf conf = new SparkConf().setAppName("TP Spark");
+		//JavaSparkContext context = new JavaSparkContext(conf);
+		System.out.println(Calculator.hgt2latlon(args[0]));
 	}
 	
 }
