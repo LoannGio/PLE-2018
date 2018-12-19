@@ -9,7 +9,8 @@ public class Main {
 		
 		//parkConf conf = new SparkConf().setAppName("TP Spark");
 		//JavaSparkContext context = new JavaSparkContext(conf);
-		System.out.println(Calculator.hgt2latlon(args[0], "toto.txt"));
+		Calculator.latlon2png(Calculator.hgt2stringlist(args[0]));
+		//System.out.println(Calculator.hgt2latlon(args[0], "toto.txt"));
 	}
 	
 }
