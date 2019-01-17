@@ -1,16 +1,15 @@
 package bigdata;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class Calculator {
 
-	public static String hgt2file(String filepath, String outputFile){
+	public static ArrayList<String> hgt2list(String filepath){
+		ArrayList<String> res = new ArrayList<String>();
 		ArrayList<Integer> bounds = new ArrayList<Integer>();
 		bounds.add(0);
 		bounds.add(8000);
@@ -24,21 +23,11 @@ public class Calculator {
 
 		BufferedReader br = null;
 		FileReader fr = null;
-		FileOutputStream out = null;
 
 		try {
-			out = new FileOutputStream(outputFile);
 			fr = new FileReader(filepath);
 			br = new BufferedReader(fr);
-			String filename = filepath;
-			double lat = Double.valueOf(filename.substring(1, 3));
-			double lng = Double.valueOf(filename.substring(4, 7));
 			char[] buffer = new char[2];
-
-			if (filename.toLowerCase().charAt(0) == 's')
-				lat *= -1;
-			if (filename.toLowerCase().charAt(3) == 'w')
-				lng *= 1;
 
 			int cLevel = -1;	//current browsing level
 			int cOccur = 0;		// current browsing level occur
@@ -48,8 +37,6 @@ public class Calculator {
 				for (int j = 0; j < length; j++) {
 					if (br.read(buffer, 0, buffer.length) != -1) {
 						height[i][j] = (buffer[0] << 8) | buffer[1];
-						//String tmp = String.format("%.10f", lat + i * 1.0 / length) + "," + String.format("%.10f", lng + j * 0.001 / length) + "," + height[i][j] + "\n";
-						//out.write(tmp.getBytes());
 						tmpLevel = hlf.whichLevelIs(height[i][j]);
 						if(cLevel == -1){
 							cLevel = tmpLevel;
@@ -60,25 +47,22 @@ public class Calculator {
 						if(cLevel == tmpLevel) {
 							cOccur++;
 						} else {
-							String tmp = cOccur + "x" + cLevel + ",";
-							out.write(tmp.getBytes());
+							String tmp = cOccur + "x" + cLevel;
+							res.add(tmp);
 							cLevel = tmpLevel;
 							cOccur = 1;
 						}
 
 						if(i == length-1 && j == length-1){
 							String tmp = cOccur + "x" + cLevel;
-							out.write(tmp.getBytes());
+							res.add(tmp);
 						}
-					} else {
-						return "Error reading file : " + filename;
 					}
 				}
 			}
 		} catch (IOException e) {
-			return "Error opening file : " + filepath;
+			e.printStackTrace();
 		} finally {
-
 			try {
 
 				if (br != null)
@@ -86,17 +70,15 @@ public class Calculator {
 
 				if (fr != null)
 					fr.close();
-				if (out != null)
-					out.close();
 
 			} catch (IOException ex) {
 			}
 		}
-		return "Done";
+		return res;
 	}
 
 
-	public static void latlon2png(ArrayList<String> latlons) {
+	public static void file2png(ArrayList<String> heights) {
 		int length = 1201;
 
 		// TYPE_INT_ARGB specifies the image format: 8-bit RGBA packed
@@ -104,8 +86,38 @@ public class Calculator {
 		BufferedImage bi = new BufferedImage(length, length, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D ig2 = bi.createGraphics();
 
-		for(int i = 0; i < latlons.size(); i++){
-			int altitude = Integer.parseInt(latlons.get(i).split(",")[2]);
+		int [] color = new int[6];
+		color[0] = (126<<24) | (0<<16) | (102<<8) | 205;
+		color[1] = (126<<24) | (0<<16) | (255<<8) | 204;
+		color[2] = (126<<24) | (0<<16) | (255<<8) | 0;
+		color[3] = (126<<24) | (255<<16) | (255<<8) | 0;
+		color[4] = (126<<24) | (204<<16) | (153<<8) | 0;
+		color[5] = (126<<24) | (255<<16) | (255<<8) | 255;
+
+		int currentImgI = 0;
+		int currentImgJ = 0;
+		int occur = -1;
+		int level = -1;
+
+		for(String s : heights){
+			occur = Integer.valueOf(s.split("x")[0]);
+			level = Integer.valueOf(s.split("x")[1]);
+			for(int o = 0; o < occur; o++){
+				bi.setRGB(currentImgJ, currentImgI, color[level]);
+				if(currentImgJ < length-1){
+					currentImgJ++;
+				} else{
+					currentImgI++;
+					currentImgJ = 0;
+				}
+			}
 		}
+		try{
+			File f = new File("out.png");
+			ImageIO.write(bi, "png", f);
+		}catch(IOException e){
+			System.out.println(e);
+		}
+		System.out.println("Done");
 	}
 }
