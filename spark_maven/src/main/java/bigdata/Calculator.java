@@ -10,8 +10,15 @@ import java.util.ArrayList;
 
 public class Calculator {
 
-	public static String hgt2latlon(String filepath, String outputFile) {
-		String res = "";
+	public static String hgt2file(String filepath, String outputFile){
+		ArrayList<Integer> bounds = new ArrayList<Integer>();
+		bounds.add(0);
+		bounds.add(8000);
+		bounds.add(2000);
+		bounds.add(1000);
+		bounds.add(4000);
+		HeightLevelFinder hlf = new HeightLevelFinder(bounds);
+
 		int length = 1201;
 		int[][] height = new int[length][length];
 
@@ -23,7 +30,7 @@ public class Calculator {
 			out = new FileOutputStream(outputFile);
 			fr = new FileReader(filepath);
 			br = new BufferedReader(fr);
-			String filename = filepath.split("/")[1];
+			String filename = filepath;
 			double lat = Double.valueOf(filename.substring(1, 3));
 			double lng = Double.valueOf(filename.substring(4, 7));
 			char[] buffer = new char[2];
@@ -33,14 +40,36 @@ public class Calculator {
 			if (filename.toLowerCase().charAt(3) == 'w')
 				lng *= 1;
 
+			int cLevel = -1;	//current browsing level
+			int cOccur = 0;		// current browsing level occur
+			int tmpLevel = -1;
+
 			for (int i = 0; i < length; i++) {
 				for (int j = 0; j < length; j++) {
 					if (br.read(buffer, 0, buffer.length) != -1) {
 						height[i][j] = (buffer[0] << 8) | buffer[1];
-						//System.out.println();
-						String tmp = String.format("%.10f", lat + i * 1.0 / length) + "," + String.format("%.10f", lng + j * 0.001 / length) + "," + height[i][j] + "\n";
-						out.write(tmp.getBytes());
+						//String tmp = String.format("%.10f", lat + i * 1.0 / length) + "," + String.format("%.10f", lng + j * 0.001 / length) + "," + height[i][j] + "\n";
+						//out.write(tmp.getBytes());
+						tmpLevel = hlf.whichLevelIs(height[i][j]);
+						if(cLevel == -1){
+							cLevel = tmpLevel;
+							cOccur++;
+							continue;
+						}
 
+						if(cLevel == tmpLevel) {
+							cOccur++;
+						} else {
+							String tmp = cOccur + "x" + cLevel + ",";
+							out.write(tmp.getBytes());
+							cLevel = tmpLevel;
+							cOccur = 1;
+						}
+
+						if(i == length-1 && j == length-1){
+							String tmp = cOccur + "x" + cLevel;
+							out.write(tmp.getBytes());
+						}
 					} else {
 						return "Error reading file : " + filename;
 					}
@@ -63,59 +92,7 @@ public class Calculator {
 			} catch (IOException ex) {
 			}
 		}
-		return res;
-	}
-
-	public static ArrayList<String> hgt2stringlist(String filepath) {
-		String res = "";
-		int length = 1201;
-		int[][] height = new int[length][length];
-
-		BufferedReader br = null;
-		FileReader fr = null;
-		ArrayList<String> latlons = new ArrayList<String>();
-
-		try {
-			fr = new FileReader(filepath);
-			br = new BufferedReader(fr);
-			double lat = Double.valueOf(filepath.substring(1, 3));
-			double lng = Double.valueOf(filepath.substring(4, 7));
-			char[] buffer = new char[2];
-
-			if (filepath.toLowerCase().charAt(0) == 's')
-				lat *= -1;
-			if (filepath.toLowerCase().charAt(3) == 'w')
-				lng *= 1;
-
-			for (int i = 0; i < length; i++) {
-				for (int j = 0; j < length; j++) {
-					if (br.read(buffer, 0, buffer.length) != -1) {
-						height[i][j] = (buffer[0] << 8) | buffer[1];
-						//System.out.println();
-						String tmp = String.format("%.10f", lat + i * 1.0 / length) + ";" + String.format("%.10f", lng + j * 0.001 / length) + ";" + height[i][j] + "\n";
-						latlons.add(tmp);
-					} else {
-						System.out.println("Error reading file : " + filepath);
-						return null;
-					}
-				}
-			}
-		} catch (IOException e) {
-			System.out.println("Error opening file : " + filepath);
-			return null;
-		} finally {
-
-			try {
-
-				if (br != null)
-					br.close();
-
-				if (fr != null)
-					fr.close();
-			} catch (IOException ex) {
-			}
-		}
-		return latlons;
+		return "Done";
 	}
 
 
