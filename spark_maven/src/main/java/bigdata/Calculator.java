@@ -8,55 +8,36 @@ import java.util.ArrayList;
 
 public class Calculator {
 
-	public static ArrayList<Integer> hgt2list(String filepath){
+	public static ArrayList<Integer> hgt2list(byte[] buffer){
 		int MAX_HEIGHT = 8000;
-		ArrayList<Integer> res = new ArrayList<Integer>();
+		ArrayList<Integer> heightValues = new ArrayList<Integer>();
 
 		int length = 1201;
 		int[][] height = new int[length][length];
 
-		BufferedReader br = null;
-		FileReader fr = null;
 
-		try {
-			fr = new FileReader(filepath);
-			br = new BufferedReader(fr);
-			char[] buffer = new char[2];
+		double heightValue;
+		int buffer_index = 0;
 
-			double heightValue;
-
-			for (int i = 0; i < length; i++) {
-				for (int j = 0; j < length; j++) {
-					if (br.read(buffer, 0, buffer.length) != -1){
-						height[i][j] = (int) ((buffer[0] & 0xFF) << 8 | (buffer[1] & 0xFF));
-						heightValue = (height[i][j] * 255.0) / MAX_HEIGHT;
-						if(heightValue > 255)
-							heightValue = 255;
-						else if (heightValue > 0 && heightValue < 1)
-							heightValue = 1;
-						res.add((int)heightValue);
-					}
+		for (int i = 0; i < length; i++) {
+			for (int j = 0; j < length; j++) {
+				if(buffer_index < buffer.length - 1){
+					height[i][j] = (int) ((buffer[buffer_index] & 0xFF) << 8 | (buffer[buffer_index+1] & 0xFF));
+					buffer_index += 2;
+					heightValue = (height[i][j] * 255.0) / MAX_HEIGHT;
+					if(heightValue > 255)
+						heightValue = 255;
+					else if (heightValue > 0 && heightValue < 1)
+						heightValue = 1;
+					heightValues.add((int)heightValue);
 				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-
-				if (br != null)
-					br.close();
-
-				if (fr != null)
-					fr.close();
-
-			} catch (IOException ex) {
-			}
 		}
-		return res;
+		return heightValues;
 	}
 
 
-	public static void file2png(ArrayList<Integer> heightValues) {
+	public static void list2png(ArrayList<Integer> heightValues) {
 		int length = 1201;
 
 		// TYPE_INT_ARGB specifies the image format: 8-bit RGBA packed
@@ -102,11 +83,10 @@ public class Calculator {
 			}
 		}
 		try{
-			File f = new File("out4.png");
+			File f = new File("out.png");
 			ImageIO.write(bi, "png", f);
 		}catch(IOException e){
 			System.out.println(e);
 		}
-		System.out.println("Done");
 	}
 }
