@@ -64,7 +64,7 @@ public class Calculator {
 			if(heightslist.get(i) > 9000){
 				int sum = 0;
 				int cpt = 0;
-				for(int p = (i-nb_checkers >= 0)?(i-nb_checkers):0; p < ((i+nb_checkers < heightslist.size())?(i+nb_checkers):(heightslist.size()-1)); p++){
+				for(int p = (i-nb_checkers >= 0)?(i-nb_checkers):0; p < ((i+nb_checkers < heightslist.size())?(i+nb_checkers):(heightslist.size())); p++){
 					if(heightslist.get(p) <= 9000){
 						sum += heightslist.get(p);
 						cpt++;
