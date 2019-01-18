@@ -35,8 +35,9 @@ public class Calculator {
 
 			for (int i = 0; i < length; i++) {
 				for (int j = 0; j < length; j++) {
-					if (br.read(buffer, 0, buffer.length) != -1) {
-						height[i][j] = (buffer[0] << 8) | buffer[1];
+					if (br.read(buffer, 0, buffer.length) != -1){
+						height[i][j] = (int) ((buffer[0] & 0xFF) << 8 | (buffer[1] & 0xFF));
+						System.out.println(height[i][j]);
 						tmpLevel = hlf.whichLevelIs(height[i][j]);
 						if(cLevel == -1){
 							cLevel = tmpLevel;
@@ -84,7 +85,6 @@ public class Calculator {
 		// TYPE_INT_ARGB specifies the image format: 8-bit RGBA packed
 		// into integer pixels
 		BufferedImage bi = new BufferedImage(length, length, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D ig2 = bi.createGraphics();
 
 		int [] color = new int[6];
 		color[0] = (255<<24) | (0<<16) | (102<<8) | 205;
