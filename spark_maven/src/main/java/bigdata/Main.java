@@ -21,8 +21,10 @@ public class Main {
 		    Calculator.list2png(Calculator.hgt2list(pixels));
         });
 
-		//Calculator.list2png(Calculator.hgt2list("N42E009.hgt"));
+		/*Calculator.HeightValues2file(Calculator.hgt2list2("N42E009.hgt"));
+        Calculator.list2png(Calculator.hgt2list2("N42E009.hgt"));*/
 
-	}
+
+    }
 	
 }
