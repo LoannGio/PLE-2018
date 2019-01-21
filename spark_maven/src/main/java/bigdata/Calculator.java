@@ -8,16 +8,24 @@ import java.util.ArrayList;
 
 public class Calculator {
 
-	public static ArrayList<Integer> hgt2list(byte[] buffer){
+	public static Dem3Infos hgt2dem3infos(byte[] buffer, String filename){
+		Dem3Infos result;
+		int latmin, latmax, longmin, longmax;
 		int MAX_HEIGHT = 8000;
 		ArrayList<Integer> heightValues = new ArrayList<Integer>();
 
 		int length = 1201;
 		int[][] height = new int[length][length];
 
+		int lat = Integer.valueOf(filename.substring(1, 3));
+		int lng = Integer.valueOf(filename.substring(4,7));
+
+		if(filename.toLowerCase().charAt(0) == 's')
+			lat *= -1;
+		if(filename.toLowerCase().charAt(3) == 'w')
+			lng *= 1;
 
 		int buffer_index = 0;
-
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length; j++) {
 				if(buffer_index < buffer.length - 1){
@@ -29,8 +37,15 @@ public class Calculator {
 		}
 		heightValues = correct(height, length);
 		heightValues = generateValues(heightValues, MAX_HEIGHT);
-		HeightValues2file(heightValues);
-		return heightValues;
+
+		latmin = lat;
+		latmax = lat +1;
+		longmin = lng;
+		longmax = lng + 1;
+		ArrayList<String> str_heightValues = HeightValues2ConcatenatedStringList(heightValues);
+
+		result = new Dem3Infos(latmin, latmax, longmin, longmax, str_heightValues, filename);
+		return result;
 	}
 
 
@@ -70,19 +85,16 @@ public class Calculator {
 						cpt++;
 					}
 				}
-				heightslist.set(i, sum/cpt);
+				if(cpt != 0)
+					heightslist.set(i, sum/cpt); //ici
 			}
 		}
 		return heightslist;
 	}
 
 
-	public static void HeightValues2file(ArrayList<Integer> heightValues){
-
-		FileOutputStream out = null;
-		try{
-			out = new FileOutputStream("result.txt");
-
+	public static ArrayList<String> HeightValues2ConcatenatedStringList(ArrayList<Integer> heightValues){
+		ArrayList<String> res = new ArrayList<String>();
 			int cValue = -1;
 			int cpt = 0;
 			int tmpValue;
@@ -97,29 +109,12 @@ public class Calculator {
 					cpt++;
 				}else if(cValue != tmpValue){
 					str_out = cpt + "x" + cValue;
-					if(i < heightValues.size() -1)
-						str_out += ",";
-					out.write(str_out.getBytes());
+					res.add(str_out);
 					cValue = tmpValue;
 					cpt = 1;
 				}
 			}
-
-		}catch(Exception e){
-			System.out.println("Error in file");
-		} finally{
-			try{
-
-				if(out != null)
-					out.close();
-			}catch(IOException ioe){
-				System.out.println("Error in out");
-			}
-		}
-
-
-
-
+			return res;
 	}
 
 	public static void list2png(ArrayList<Integer> heightValues) {
