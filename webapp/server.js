@@ -13,15 +13,16 @@ app.set('view engine', 'ejs');
 
 
 app.get('/', function (req, res){  //index
-  
   res.render('index', {title: 'BigData Viewer'});
-  client.table('lgiovannange').row('N42E009.hgt').get('infos', function(err, cell){
-    console.log(cell);
-  });
 });
 
-app.get('/projet/creer', function (req, res){
-  //Envoyer formulaire de creation projet
+app.get('/img', function (req, res){
+  let p = client.table('lgiovannange').row('N42E009.hgt').get('data', function(err, cell){
+    let str = JSON.stringify(cell).substring(1,JSON.stringify(cell).length-1);
+    let obj = JSON.parse(str);
+    return (obj.$);
+  }).then(console.log('toto'));
+  res.send(p);
 });
 
 app.post('/projet/creer', function (req, res){
