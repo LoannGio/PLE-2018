@@ -4,6 +4,12 @@
 # Log file
 *.log
 
+webapp/node_modules/
+webapp/package-lock.json
+
+# idea files
+.idea/
+
 # BlueJ files
 *.ctxt
 

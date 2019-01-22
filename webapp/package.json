@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "/espace/Auber_PLE-ripoux/hbase/bin/hbase rest start -p 8080;node server.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,7 +13,10 @@
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "hbase": "^0.4.2",
+<<<<<<< HEAD
     "hbase-rpc-client": "^0.1.15",
+=======
+>>>>>>> 8a898c2ce8844f39630e08d63a154cea9cdae6c3
     "morgan": "^1.9.1"
   }
 }
