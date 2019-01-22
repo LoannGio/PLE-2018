@@ -10,8 +10,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.util.Tool;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class HBaseAdd extends Configured implements Tool, Serializable {
 
@@ -20,12 +18,11 @@ public class HBaseAdd extends Configured implements Tool, Serializable {
         Connection connection = ConnectionFactory.createConnection(getConf());
         Table table = connection.getTable(TableName.valueOf(HBaseInfos.TABLE_NAME));
         Put put = new Put(Bytes.toBytes(infos[5]));
-        put.addColumn(HBaseInfos.FAMILY_INFOS, Bytes.toBytes("latmin"), Bytes.toBytes(infos[0]));
-        put.addColumn(HBaseInfos.FAMILY_INFOS, Bytes.toBytes("latmax"), Bytes.toBytes(infos[1]));
-        put.addColumn(HBaseInfos.FAMILY_INFOS, Bytes.toBytes("longmin"), Bytes.toBytes(infos[2]));
-        put.addColumn(HBaseInfos.FAMILY_INFOS, Bytes.toBytes("longmax"), Bytes.toBytes(infos[3]));
-
-        put.addColumn(HBaseInfos.FAMILY_DATA, Bytes.toBytes("heightvalues"), Bytes.toBytes(infos[4]));
+        put.addColumn(HBaseInfos.FAMILY_DEM3, Bytes.toBytes("latmin"), Bytes.toBytes(infos[0]));
+        put.addColumn(HBaseInfos.FAMILY_DEM3, Bytes.toBytes("latmax"), Bytes.toBytes(infos[1]));
+        put.addColumn(HBaseInfos.FAMILY_DEM3, Bytes.toBytes("longmin"), Bytes.toBytes(infos[2]));
+        put.addColumn(HBaseInfos.FAMILY_DEM3, Bytes.toBytes("longmax"), Bytes.toBytes(infos[3]));
+        put.addColumn(HBaseInfos.FAMILY_DEM3, Bytes.toBytes("heightvalues"), Bytes.toBytes(infos[4]));
 
 
         table.put(put);
