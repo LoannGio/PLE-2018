@@ -12,6 +12,8 @@
   "dependencies": {
     "ejs": "^2.6.1",
     "express": "^4.16.4",
+    "hbase": "^0.4.2",
+    "hbase-rpc-client": "^0.1.15",
     "morgan": "^1.9.1"
   }
 }
