@@ -1,2 +1,5 @@
 spark-submit --master yarn --deploy-mode cluster --num-executors 29 --class bigdata.Main --executor-memory 7G --executor-cores 4 target/ProjetPLE-0.0.1.jar 
 
+
+
+spark-submit --master yarn --deploy-mode cluster --num-executors 29 --class bigdata.Main --executor-memory 6G --executor-cores 4 target/ProjetPLE-0.0.1.jar 

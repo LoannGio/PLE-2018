@@ -7,14 +7,14 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Calculator {
+	private static final int MAX_HEIGHT = 8000;
+	private static final int length = 1201;
 
 	public static Dem3Infos hgt2dem3infos(byte[] buffer, String filename){
 		Dem3Infos result;
 		int latmin, latmax, longmin, longmax;
-		int MAX_HEIGHT = 8000;
 		ArrayList<Integer> heightValues = new ArrayList<Integer>();
 
-		int length = 1201;
 		int[][] height = new int[length][length];
 
 		int lat = Integer.valueOf(filename.substring(1, 3));
@@ -23,7 +23,7 @@ public class Calculator {
 		if(filename.toLowerCase().charAt(0) == 's')
 			lat *= -1;
 		if(filename.toLowerCase().charAt(3) == 'w')
-			lng *= 1;
+			lng *= -1;
 
 		int buffer_index = 0;
 		for (int i = 0; i < length; i++) {
@@ -35,25 +35,30 @@ public class Calculator {
 				}
 			}
 		}
-		heightValues = correct(height, length);
-		heightValues = generateValues(heightValues, MAX_HEIGHT);
+		heightValues = correct(height);
+		heightValues = generateValues(heightValues);
 
 		latmin = lat;
 		latmax = lat +1;
 		longmin = lng;
 		longmax = lng + 1;
 		ArrayList<String> str_heightValues = HeightValues2ConcatenatedStringList(heightValues);
+		int trueLatMin = Math.abs(latmin - 89);
+		int trueLongMin = longmin + 180;
+		String rowkey = "X" + trueLongMin +  "Y" + trueLatMin;
 
-		result = new Dem3Infos(latmin, latmax, longmin, longmax, str_heightValues, filename);
+
+		result = new Dem3Infos(latmin, latmax, longmin, longmax, str_heightValues, filename, rowkey);
 		return result;
 	}
 
 
-	private static ArrayList<Integer> generateValues(ArrayList<Integer> heightLists, int MAX_HEIGHT){
+	private static ArrayList<Integer> generateValues(ArrayList<Integer> heightLists){
 		ArrayList<Integer> heightValues = new ArrayList<Integer>();
 
 		double heightValue;
-		for(int i = 0; i < heightLists.size(); i++){
+		int i;
+		for(i = 0; i < heightLists.size(); i++){
 			heightValue = (heightLists.get(i) * 255.0) / MAX_HEIGHT;
 			if(heightValue > 255)
 				heightValue = 255;
@@ -62,10 +67,18 @@ public class Calculator {
 			heightValues.add((int)heightValue);
 		}
 
+		int length2d = length*length;
+		if(i < length2d){
+			int toFill = length2d - i;
+			for(i = 0; i < toFill; i++){
+				heightValues.add(0);
+			}
+		}
+
 		return heightValues;
 	}
 
-	private static ArrayList<Integer> correct(int [][] height, int length) {
+	private static ArrayList<Integer> correct(int [][] height) {
 		ArrayList<Integer> heightslist = new ArrayList<Integer>();
 
 		for (int i = 0; i <length; i++) {
@@ -95,25 +108,29 @@ public class Calculator {
 
 	public static ArrayList<String> HeightValues2ConcatenatedStringList(ArrayList<Integer> heightValues){
 		ArrayList<String> res = new ArrayList<String>();
-			int cValue = -1;
-			int cpt = 0;
-			int tmpValue;
-			String str_out;
+		int cValue = -1;
+		int cpt = 0;
+		int tmpValue;
+		String str_out;
 
-			for(int i = 0; i < heightValues.size(); i++){
-				tmpValue = heightValues.get(i);
-				if(cValue == -1){
-					cValue = tmpValue;
-					cpt++;
-				}else if(cValue == tmpValue){
-					cpt++;
-				}else if(cValue != tmpValue){
-					str_out = cpt + "x" + cValue;
-					res.add(str_out);
-					cValue = tmpValue;
-					cpt = 1;
-				}
+		for(int i = 0; i < heightValues.size(); i++){
+			tmpValue = heightValues.get(i);
+			if(cValue == -1){
+				cValue = tmpValue;
+				cpt++;
+			}else if(cValue == tmpValue){
+				cpt++;
+			}else if(cValue != tmpValue){
+				str_out = cpt + "x" + cValue;
+				res.add(str_out);
+				cValue = tmpValue;
+				cpt = 1;
 			}
+		}
+		if(cpt > 0){
+			str_out = cpt + "x" + cValue;
+			res.add(str_out);
+		}
 			return res;
 	}
 

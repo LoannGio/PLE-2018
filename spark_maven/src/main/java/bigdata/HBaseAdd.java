@@ -17,7 +17,7 @@ public class HBaseAdd extends Configured implements Tool, Serializable {
     public int run(String[] infos) throws Exception {
         Connection connection = ConnectionFactory.createConnection(getConf());
         Table table = connection.getTable(TableName.valueOf(HBaseInfos.TABLE_NAME));
-        Put put = new Put(Bytes.toBytes(infos[5]));
+        Put put = new Put(Bytes.toBytes(infos[6]));
         put.addColumn(HBaseInfos.FAMILY_DEM3, Bytes.toBytes("latmin"), Bytes.toBytes(infos[0]));
         put.addColumn(HBaseInfos.FAMILY_DEM3, Bytes.toBytes("latmax"), Bytes.toBytes(infos[1]));
         put.addColumn(HBaseInfos.FAMILY_DEM3, Bytes.toBytes("longmin"), Bytes.toBytes(infos[2]));

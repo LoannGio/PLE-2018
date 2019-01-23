@@ -1,25 +1,27 @@
-
 <!DOCTYPE html>
+
 <head>
     <meta charset="utf-8">
-    <title><%= title %></title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
-   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-   crossorigin=""/>
-   <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
-   integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
-   crossorigin=""></script>
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+        crossorigin=""></script>
 </head>
 <html>
-  <body>
-      <div id="mapid" style="height: 1000px;"></div>
-  </body>
+
+<body>
+    <div id="mapid" style="height: 1000px;"></div>
+</body>
+
 </html>
 
 <script>
-    let map = L.map('mapid').setView([51.505, -0.09], 13);
-    L.tileLayer('https://i.stack.imgur.com/kS9Kf.png', {
+    let map = L.map('mapid').setView([42,9], 7);
+    
+    L.tileLayer('http://ripoux:2000/canvas/{z}/{x}/{y}', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-
 </script>
