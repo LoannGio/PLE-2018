@@ -104,7 +104,7 @@ public class Calculator {
             for(int l = 0 ; l < ratio ; l++) {
                 for (int i = 0; i < length ; i++) {
                     for (int j = 0; j < length ; j++) {
-                        finalImg[k * length + i][l * length + j] = imgTab[k+ratio*l][i][j];
+                        finalImg[k * length + j][l * length + i] = imgTab[k+ratio*l][i][j];
                     }
                 }
             }
