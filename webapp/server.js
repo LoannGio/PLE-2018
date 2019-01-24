@@ -55,7 +55,7 @@ app.get('/canvas/:z/:x/:y', function (req, res) {
       let heightValues = obj.$.split(', ');
       let i = 0;
       let occur, hv, color;
-      heightValues.forEach(element => {
+      heightValues.forEach(function(element, index) {
         occur = Number(element.split('x')[0]);
         hv = Number(element.split('x')[1]);
         color = getColor(hv);
