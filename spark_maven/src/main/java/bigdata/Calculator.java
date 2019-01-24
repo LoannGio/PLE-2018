@@ -81,7 +81,7 @@ public class Calculator {
                 ihv.add(value);
             }
         }
-        list2png(ihv, ratio*length);
+        list2png(ihv, length);
 
         result.LatMin = imgToAggregate[0].LatMin;
         result.LongMin = imgToAggregate[0].LongMin;
@@ -92,36 +92,6 @@ public class Calculator {
         return result;
     }
 
-    /*private static ArrayList<String> aggregateHeightValues(Dem3Infos[] imgToAggregate, int ratio, int length) {
-        int [][][]imgTab = new int[imgToAggregate.length][length][length];
-        for(int i = 0 ; i < imgToAggregate.length ; i++) {
-            imgTab[i] = HVString2HVInt(imgToAggregate[i].HeightValues);
-        }
-
-        int [][]finalImg = new int[ratio*length][ratio*length];
-
-        for(int k = 0 ; k < ratio ; k++) {
-            for(int l = 0 ; l < ratio ; l++) {
-                for (int i = 0; i < length ; i++) {
-                    for (int j = 0; j < length ; j++) {
-                        finalImg[k * length + j][l * length + i] = imgTab[k+ratio*l][i][j];
-                    }
-                }
-            }
-        }
-
-
-
-        ArrayList<Integer> aggregatedImg = new ArrayList<Integer>();
-        for(int i = 0 ; i < ratio*length ; i++) {
-            for(int j = 0 ; j < ratio*length ; j++) {
-                aggregatedImg.add(finalImg[i][j]);
-            }
-        }
-        return HeightValues2ConcatenatedStringList(aggregatedImg);
-
-    }*/
-
     private static ArrayList<String> aggregateHeightValues(Dem3Infos[] imgToAggregate, int ratio, int length){
         int [][][]imgTab = new int[imgToAggregate.length][length][length];
         for(int i = 0 ; i < imgToAggregate.length ; i++) {
@@ -129,6 +99,11 @@ public class Calculator {
         }
 
         int [][]finalImg = new int[length][length];
+        for(int i = 0 ; i < length ; i++){
+            for(int j = 0 ; j < length ; j++){
+                finalImg[i][j] = -1;
+            }
+        }
 
         for(int i = 0 ; i < length ; i++){
             for(int j = 0 ; j < length ; j++){
@@ -157,13 +132,16 @@ public class Calculator {
         int cpt_err = 0;
         for(int k = 0 ; k < ratio ; k++){
             for(int l = 0 ; l < ratio ; l++){
-                indexImageX = (x+k)/limit;
-                indexImageY = (y+l)/limit;
+                indexImageX = (x+k)/(limit*ratio);
+                indexImageY = (y+l)/(limit*ratio);
+                if(((x + k) % length) - ((x + k - 1) % length) < 0) //BAND-AID FIX TEST
+                    indexImageX++;
+                if(((y + l) % length) - ((y + l - 1) % length) < 0) //BAND-AID FIX TEST
+                    indexImageY++;
                 indexImage = indexImageX + ratio*indexImageY;
-                System.out.println(indexImageX + " " + indexImageY);
-                System.out.println("index : " + indexImage + " - x : " + (x+k) + " - y : " + (y+l));
-                if(x+k < ratio*length && y+l < ratio*length && indexImage < ratio*ratio)
-                    sum += imgTab[indexImage][(x+k)%length][(y+l)%length];
+                if(x+k < ratio*length && y+l < ratio*length && indexImage < ratio*ratio) {
+                    sum += imgTab[indexImage][(y + l) % length][(x + k) % length];
+                }
                 else
                     cpt_err++;
             }
