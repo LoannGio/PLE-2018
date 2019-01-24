@@ -1,21 +1,19 @@
 package bigdata;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 
 public class Calculator {
 	private static final int MAX_HEIGHT = 8000;
-	private static final int DEFAULT_LENGTH = 1201;
 
 	public static Dem3Infos hgt2dem3infos(byte[] buffer, String filename, int zoomLevel){
 		Dem3Infos result;
 		int latmin, latmax, longmin, longmax;
 		ArrayList<Integer> heightValues = new ArrayList<Integer>();
 
-		int length = DEFAULT_LENGTH * zoomLevel;
+		int length = HBaseInfos.DEFAULT_LENGTH;
 		int[][] height = new int[length][length];
 
 		int lat = Integer.valueOf(filename.substring(1, 3));
@@ -55,7 +53,7 @@ public class Calculator {
 
 	public static Dem3Infos Hbase2dem3infos(int x, int y, int zoomLevel){
 		Dem3Infos result;
-		int length = DEFAULT_LENGTH * zoomLevel;
+		int length = HBaseInfos.DEFAULT_LENGTH;
 		Dem3Infos[] imgToAgregate = new Dem3Infos[4];
 		HBaseGet get = new HBaseGet();
 		/*
@@ -65,10 +63,10 @@ public class Calculator {
 		3 : bot right
 		* */
 		try{
-			imgToAgregate[0] = get.getDem3Agregate(2*x, 2*y, zoomLevel-1);
-			imgToAgregate[1] = get.getDem3Agregate(2*x+1, 2*y, zoomLevel-1);
-			imgToAgregate[2] = get.getDem3Agregate(2*x, 2*y+1, zoomLevel-1);
-			imgToAgregate[3] = get.getDem3Agregate(2*x+1, 2*y+1, zoomLevel-1);
+			imgToAgregate[0] = get.getDem3FromHBase(2*x, 2*y, zoomLevel-1);
+			imgToAgregate[1] = get.getDem3FromHBase(2*x+1, 2*y, zoomLevel-1);
+			imgToAgregate[2] = get.getDem3FromHBase(2*x, 2*y+1, zoomLevel-1);
+			imgToAgregate[3] = get.getDem3FromHBase(2*x+1, 2*y+1, zoomLevel-1);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -159,7 +157,7 @@ public class Calculator {
 	}
 
 	public static void list2png(ArrayList<Integer> heightValues) {
-		int length = DEFAULT_LENGTH; //ZOOM LEVEL
+		int length = HBaseInfos.DEFAULT_LENGTH;
 
 		// TYPE_INT_ARGB specifies the image format: 8-bit RGBA packed
 		// into integer pixels

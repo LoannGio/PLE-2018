@@ -21,6 +21,8 @@ public class HBaseGet extends Configured implements Tool, Serializable {
         Table table = connection.getTable(TableName.valueOf(HBaseInfos.TABLE_NAME));
         byte[] rowkey = Bytes.toBytes(args[0]);
         Result res = table.get(new Get(rowkey));
+        if(res.isEmpty())
+            return 0;
 
         infos.RowKey = args[0];
         infos.LatMin = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMIN), "UTF-8"));
@@ -33,13 +35,25 @@ public class HBaseGet extends Configured implements Tool, Serializable {
         for(String s : tmp.split(", ")){
             infos.HeightValues.add(s);
         }
-        return 0;
+        return 1;
     }
 
-    public Dem3Infos getDem3Agregate(int x, int y, int zoomLevel) throws Exception {
+    public Dem3Infos getDem3FromHBase(int x, int y, int zoomLevel) throws Exception {
         String[] params = new String[1];
         params[0] = "X"+x+"Y"+y+"Z"+zoomLevel;;
-        run(params);
+        int exitStatus = run(params);
+
+        if(exitStatus == 0){
+            //No dem3 found, create water
+            infos.LatMin = y;
+            infos.LatMax = y +1;
+            infos.LongMin = x;
+            infos.LongMax = x +1;
+            infos.RowKey = params[0];
+            int lenght2dto1d = HBaseInfos.DEFAULT_LENGTH * HBaseInfos.DEFAULT_LENGTH;
+            String hv = lenght2dto1d + "x" + 0;
+            infos.HeightValues.add(hv);
+        }
         return infos;
     }
 }

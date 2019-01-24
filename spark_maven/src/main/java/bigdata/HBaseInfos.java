@@ -10,5 +10,7 @@ public class HBaseInfos {
     public static final byte[] QUALIFIER_LATMAX = Bytes.toBytes("latmax");
     public static final byte[] QUALIFIER_LONGMIN = Bytes.toBytes("longmin");
     public static final byte[] QUALIFIER_LONGMAX = Bytes.toBytes("longmax");
+    public static final int DEFAULT_LENGTH = 1201;
+
 
 }

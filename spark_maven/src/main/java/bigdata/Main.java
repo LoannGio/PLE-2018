@@ -22,8 +22,8 @@ public class Main {
 
 		SparkConf conf = new SparkConf().setAppName("Projet Spark");
 		JavaSparkContext context = new JavaSparkContext(conf);
-		//JavaPairRDD<String, PortableDataStream> files= context.binaryFiles("hdfs://ripoux:9000/user/raw_data/dem3/");
-	/*
+		JavaPairRDD<String, PortableDataStream> files= context.binaryFiles("hdfs://ripoux:9000/user/raw_data/dem3/");
+
 		int zoomLevel = 1;
 		int nb_tiles_lat, nb_tiles_long;
 		while(zoomLevel <= 8){
@@ -54,15 +54,6 @@ public class Main {
 				});
 			}
 			zoomLevel++;
-		}*/
-	HBaseGet get = new HBaseGet();
-	String[] params = new String[1];
-	params[0] = "ghjfiih";
-		ToolRunner.run(HBaseConfiguration.create(), get, params);
-		System.out.println("+++++++++++++++");
-
-		System.out.println(get.infos.LatMin);
-
-		//HANDLE THIS
+		}
     }
 }
