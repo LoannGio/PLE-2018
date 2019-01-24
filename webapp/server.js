@@ -32,6 +32,8 @@ app.get('/canvas/:z/:x/:y', function (req, res) {
   let y = req.params.y;
   let z = req.params.z;
 
+  console.log('x : ' + x + ', y : ' + y + ', z : ' + z);
+
   let rowkey = "X" + x + "Y" + y;
   console.log('après envoi : ' + rowkey);
   client.table('lgiovannange').row(rowkey).get('dem3:heightvalues', function (err, cell) {
