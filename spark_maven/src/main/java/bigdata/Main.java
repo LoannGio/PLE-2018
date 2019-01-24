@@ -7,6 +7,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.input.PortableDataStream;
+import scala.Array;
 import scala.Tuple2;
 
 import java.util.ArrayList;
@@ -26,22 +27,26 @@ public class Main {
 
 		360x180 => 180x90 => 90x45 => 30x15 => 10x5 => 2x1
 		*/
-		HashMap<Integer, Integer> zoomInfos = new HashMap<>();
-		zoomInfos.put(2, 5);
-		zoomInfos.put(3, 3);
-		zoomInfos.put(4, 3);
-		zoomInfos.put(5, 2);
-		zoomInfos.put(6, 2);
+		int nbTilesXMax = 360;
+		int nbTilesYMax = 180;
+
+
+		ArrayList<ZoomInfos> zoomInfos = new ArrayList<ZoomInfos>();
+		zoomInfos.add(new ZoomInfos(1, nbTilesXMax, nbTilesYMax, 1));
+		zoomInfos.add(new ZoomInfos(2, nbTilesXMax/2, nbTilesYMax/2, 2));
+		zoomInfos.add(new ZoomInfos(3, nbTilesXMax/4, nbTilesYMax/4, 2));
+		zoomInfos.add(new ZoomInfos(4, nbTilesXMax/12, nbTilesYMax/12, 3));
+		zoomInfos.add(new ZoomInfos(5, nbTilesXMax/36, nbTilesYMax/36, 3));
+		zoomInfos.add(new ZoomInfos(6, nbTilesXMax/180, nbTilesYMax/180, 5));
 
 		SparkConf conf = new SparkConf().setAppName("Projet Spark");
 		JavaSparkContext context = new JavaSparkContext(conf);
 		//JavaPairRDD<String, PortableDataStream> files= context.binaryFiles("hdfs://ripoux:9000/user/raw_data/dem3/");
-	/*
-		int zoomLevel = 1;
+
+		/*int zoomLevel = 1;
 		int nb_tiles_lat, nb_tiles_long;
 		while(zoomLevel <= 8){
-			nb_tiles_lat = 180 / zoomLevel;
-			nb_tiles_long = 360 / zoomLevel;
+
 			int finalZoomLevel = zoomLevel;
 
 			if(zoomLevel == 1){
@@ -62,20 +67,12 @@ public class Main {
 				}
 				JavaRDD<Tuple2> tupleRDD = context.parallelize(myTuples);
 				tupleRDD.foreach(tuple -> {
-					Dem3Infos infos = Calculator.Hbase2dem3infos((int)tuple._1, (int)tuple._2, finalZoomLevel);
+					Dem3Infos infos = Calculator.Hbase2dem3infos((int)tuple._1, (int)tuple._2, finalZoomLevel, zoomInfos);
 					ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), infos.toStrings());
 				});
 			}
 			zoomLevel++;
 		}*/
-	HBaseGet get = new HBaseGet();
-	String[] params = new String[1];
-	params[0] = "ghjfiih";
-		ToolRunner.run(HBaseConfiguration.create(), get, params);
-		System.out.println("+++++++++++++++");
-
-		System.out.println(get.infos.LatMin);
-
-		//HANDLE THIS
+		Calculator.Hbase2dem3infos(189/2, 47/2, zoomInfos.get(1));
     }
 }
