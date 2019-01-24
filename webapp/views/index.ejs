@@ -25,8 +25,8 @@
         getTileUrl: function (coords) {
             console.log('avant envoi - x : ' + coords.x + " - y : " + coords.y);
             coords.x = coords.x % 360;
-            //coords.y = coords.y % 180;
-            return L.TileLayer.prototype.getTileUrl.call(this, coords);
+            if(coords.y <= 180)
+                return L.TileLayer.prototype.getTileUrl.call(this, coords);
         }
     });
 
