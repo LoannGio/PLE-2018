@@ -19,9 +19,31 @@
 </html>
 
 <script>
-    let map = L.map('mapid').setView([42,9], 7);
-    
-    L.tileLayer('http://ripoux:2000/canvas/{z}/{x}/{y}', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    let map = L.map('mapid').setView([42, 9], 15);
+
+    /*L.tileLayer('http://ripoux:2300/canvas/{z}/{x}/{y}', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        zIndex: 50
+    }).addTo(map);*/
+
+    L.TileLayer.MyCustomLayer = L.TileLayer.extend({
+        getTileUrl: function (coords) {
+            coords.x = coords.x % 360;
+            coords.y = coords.y % 180;
+            return L.TileLayer.prototype.getTileUrl.call(this, coords);
+        }
+    });
+
+    L.tileLayer.myCustomLayer = function (templateUrl, options) {
+        return new L.TileLayer.MyCustomLayer(templateUrl, options);
+    }
+
+    L.tileLayer.myCustomLayer('http://ripoux:2400/canvas/{z}/{x}/{y}', {
+        minZoom: 0,
+        maxZoom: 8,
+        tms: false,
+        noWrap: false,
+        defaultRadius: 1,
     }).addTo(map);
+
 </script>

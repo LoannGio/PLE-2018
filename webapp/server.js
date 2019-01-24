@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const logger = require('morgan');
-const port = 2000;
+const port = 2400;
 const hbase = require('hbase');
 const { createImageData, Canvas } = require('canvas');
 
@@ -31,6 +31,8 @@ app.get('/canvas/:z/:x/:y', function (req, res) {
   let x = req.params.x;
   let y = req.params.y;
   let z = req.params.z;
+
+  console.log('x : ' + x + ', y : ' + y + ', z : ' + z);
 
   let rowkey = "X" + x + "Y" + y;
   console.log(rowkey);
