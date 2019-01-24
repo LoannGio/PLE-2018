@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Calculator {
 	private static final int MAX_HEIGHT = 8000;
@@ -53,10 +54,10 @@ public class Calculator {
 		return result;
 	}
 
-	public static Dem3Infos Hbase2dem3infos(int x, int y, int zoomLevel){
+	public static Dem3Infos Hbase2dem3infos(int x, int y, int zoomLevel, HashMap<Integer, Integer> zoomInfos){
 		Dem3Infos result;
 		int length = DEFAULT_LENGTH * zoomLevel;
-		Dem3Infos[] imgToAgregate = new Dem3Infos[4];
+		Dem3Infos[] imgToAgregate;
 		HBaseGet get = new HBaseGet();
 		/*
 		0 : top left
@@ -72,6 +73,8 @@ public class Calculator {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+
+
 
 		return null;
 	}

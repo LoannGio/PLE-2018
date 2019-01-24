@@ -11,6 +11,7 @@ import scala.Tuple2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static bigdata.Calculator.hgt2dem3infos;
 
@@ -19,6 +20,18 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 
 		//ToolRunner.run(HBaseConfiguration.create(), new HBaseCreate(), args);
+
+		/*
+		Foreach zoomLevel, number of zoomLevel-1 images to create the new one
+
+		360x180 => 180x90 => 90x45 => 30x15 => 10x5 => 2x1
+		*/
+		HashMap<Integer, Integer> zoomInfos = new HashMap<>();
+		zoomInfos.put(2, 5);
+		zoomInfos.put(3, 3);
+		zoomInfos.put(4, 3);
+		zoomInfos.put(5, 2);
+		zoomInfos.put(6, 2);
 
 		SparkConf conf = new SparkConf().setAppName("Projet Spark");
 		JavaSparkContext context = new JavaSparkContext(conf);
