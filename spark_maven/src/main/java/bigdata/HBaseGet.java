@@ -39,6 +39,8 @@ public class HBaseGet extends Configured implements Tool, Serializable {
             infos.HeightValues.add(s);
         }
 
+        table.close();
+        connection.close();
         return 1;
     }
 
