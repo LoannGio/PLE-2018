@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const logger = require('morgan');
-const port = 2000;
+const port = 4000;
 const hbase = require('hbase');
 const { createImageData, Canvas } = require('canvas');
 
@@ -33,7 +33,7 @@ app.get('/canvas/:z/:x/:y', function (req, res) {
   let z = req.params.z;
 
   let rowkey = "X" + x + "Y" + y;
-  console.log(rowkey);
+  console.log('après envoi : ' + rowkey);
   client.table('lgiovannange').row(rowkey).get('dem3:heightvalues', function (err, cell) {
     let length = 1201;
     let arraySize = length * length * 4;
@@ -72,6 +72,8 @@ app.get('/canvas/:z/:x/:y', function (req, res) {
     res.setHeader('Content-Type', 'image/png');
     canvas.pngStream().pipe(res);
   });
+
+
 });
 
 
