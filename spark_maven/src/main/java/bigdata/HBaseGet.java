@@ -23,14 +23,15 @@ public class HBaseGet extends Configured implements Tool, Serializable {
         Table table = connection.getTable(TableName.valueOf(HBaseInfos.TABLE_NAME));
         byte[] rowkey = Bytes.toBytes(args[0]);
         Result res = table.get(new Get(rowkey));
+        infos = new Dem3Infos();
         if(res.isEmpty())
             return 0;
 
         infos.RowKey = args[0];
-        infos.LatMin = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMIN), "UTF-8"));
-        infos.LatMax = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMAX), "UTF-8"));
-        infos.LongMin = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LONGMIN), "UTF-8"));
-        infos.LongMax = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LONGMAX), "UTF-8"));
+        infos.LatMin = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMIN)));
+        infos.LatMax = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMAX)));
+        infos.LongMin = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LONGMIN)));
+        infos.LongMax = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LONGMAX)));
 
         String tmp = Bytes.toString(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_HEIGHTVALUES));
 
@@ -58,11 +59,6 @@ public class HBaseGet extends Configured implements Tool, Serializable {
             String hv = lenght2dto1d + "x" + 0;
             infos.HeightValues.add(hv);
         }
-        /*System.out.println("LOONKING FOR : " + params[0]);
-        for (int i = 0 ; i < infos.HeightValues.size(); i++) {
-            if(i > 9480 && i < 9500)
-                System.out.println(infos.HeightValues.get(i));
-        }*/
         return infos;
     }
 }
