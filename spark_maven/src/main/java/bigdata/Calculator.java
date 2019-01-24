@@ -81,7 +81,7 @@ public class Calculator {
                 ihv.add(value);
             }
         }
-        list2png(ihv, ratio*length);
+        list2png(ihv, length);
 
         result.LatMin = imgToAggregate[0].LatMin;
         result.LongMin = imgToAggregate[0].LongMin;
@@ -146,7 +146,7 @@ public class Calculator {
 
     }
 
-    private static int getHVMean(int i, int j, int[][][] imgTab, int ratio, int length) {
+    private static int getHVMeanmax(int i, int j, int[][][] imgTab, int ratio, int length) {
         int x = ratio*i;
         int y = ratio*j;
         int limit = (length+1)/ratio;
@@ -172,7 +172,28 @@ public class Calculator {
         return sum/((ratio*ratio)-cpt_err);
     }
 
-    private static int[][] HVString2HVInt(ArrayList<String> str_hv) {
+    private static int getHVMean(int x, int y, int[][][] imgTab, int ratio, int length) {
+        int X = x*ratio;
+        int Y = y*ratio;
+        int indexX, indexY, index;
+        int sum = 0;
+        int count = 0;
+
+        for(int w = 0; w < ratio; w++){
+            for(int h = 0; h < ratio; h++){
+                indexX = (X + w)/length;
+                indexY = (Y + h)/length;
+                index = indexY * ratio + indexX;
+                if(indexX < ratio && indexY < ratio){
+                    sum += imgTab[index][(x+w)%(length+1)][(y+h)%(length+1)];
+                    count++;
+                }
+            }
+        }
+        return sum/count;
+    }
+
+        private static int[][] HVString2HVInt(ArrayList<String> str_hv) {
         int i = 0;
         int j = 0;
         int occur=-1;
