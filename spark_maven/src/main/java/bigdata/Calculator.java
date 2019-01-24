@@ -92,7 +92,7 @@ public class Calculator {
         return result;
     }
 
-    private static ArrayList<String> aggregateHeightValues(Dem3Infos[] imgToAggregate, int ratio, int length) {
+    /*private static ArrayList<String> aggregateHeightValues(Dem3Infos[] imgToAggregate, int ratio, int length) {
         int [][][]imgTab = new int[imgToAggregate.length][length][length];
         for(int i = 0 ; i < imgToAggregate.length ; i++) {
             imgTab[i] = HVString2HVInt(imgToAggregate[i].HeightValues);
@@ -110,6 +110,8 @@ public class Calculator {
             }
         }
 
+
+
         ArrayList<Integer> aggregatedImg = new ArrayList<Integer>();
         for(int i = 0 ; i < ratio*length ; i++) {
             for(int j = 0 ; j < ratio*length ; j++) {
@@ -118,6 +120,56 @@ public class Calculator {
         }
         return HeightValues2ConcatenatedStringList(aggregatedImg);
 
+    }*/
+
+    private static ArrayList<String> aggregateHeightValues(Dem3Infos[] imgToAggregate, int ratio, int length){
+        int [][][]imgTab = new int[imgToAggregate.length][length][length];
+        for(int i = 0 ; i < imgToAggregate.length ; i++) {
+            imgTab[i] = HVString2HVInt(imgToAggregate[i].HeightValues);
+        }
+
+        int [][]finalImg = new int[length][length];
+
+        for(int i = 0 ; i < length ; i++){
+            for(int j = 0 ; j < length ; j++){
+                finalImg[i][j] = getHVMean(i, j, imgTab, ratio, length);
+            }
+        }
+
+        ArrayList<Integer> aggregatedImg = new ArrayList<Integer>();
+        for(int i = 0 ; i < length ; i++) {
+            for(int j = 0 ; j < length ; j++) {
+                aggregatedImg.add(finalImg[i][j]);
+            }
+        }
+        return HeightValues2ConcatenatedStringList(aggregatedImg);
+
+    }
+
+    private static int getHVMean(int i, int j, int[][][] imgTab, int ratio, int length) {
+        int x = ratio*i;
+        int y = ratio*j;
+        int limit = (length+1)/ratio;
+        int indexImageX;
+        int indexImageY;
+        int indexImage;
+        int sum = 0;
+        int cpt_err = 0;
+        for(int k = 0 ; k < ratio ; k++){
+            for(int l = 0 ; l < ratio ; l++){
+                indexImageX = (x+k)/limit;
+                indexImageY = (y+l)/limit;
+                indexImage = indexImageX + ratio*indexImageY;
+                System.out.println(indexImageX + " " + indexImageY);
+                System.out.println("index : " + indexImage + " - x : " + (x+k) + " - y : " + (y+l));
+                if(x+k < ratio*length && y+l < ratio*length && indexImage < ratio*ratio)
+                    sum += imgTab[indexImage][(x+k)%length][(y+l)%length];
+                else
+                    cpt_err++;
+            }
+        }
+
+        return sum/((ratio*ratio)-cpt_err);
     }
 
     private static int[][] HVString2HVInt(ArrayList<String> str_hv) {
