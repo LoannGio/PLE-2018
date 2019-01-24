@@ -19,17 +19,13 @@
 </html>
 
 <script>
-    let map = L.map('mapid').setView([42, 9], 15);
-
-    /*L.tileLayer('http://ripoux:2300/canvas/{z}/{x}/{y}', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        zIndex: 50
-    }).addTo(map);*/
+    let map = L.map('mapid').setMinZoom(8).setMaxZoom(8).setView([0, 0], 9);
 
     L.TileLayer.MyCustomLayer = L.TileLayer.extend({
         getTileUrl: function (coords) {
+            console.log('avant envoi - x : ' + coords.x + " - y : " + coords.y);
             coords.x = coords.x % 360;
-            coords.y = coords.y % 180;
+            //coords.y = coords.y % 180;
             return L.TileLayer.prototype.getTileUrl.call(this, coords);
         }
     });
@@ -38,12 +34,13 @@
         return new L.TileLayer.MyCustomLayer(templateUrl, options);
     }
 
-    L.tileLayer.myCustomLayer('http://ripoux:2400/canvas/{z}/{x}/{y}', {
-        minZoom: 0,
+    L.tileLayer.myCustomLayer('http://ripoux:4000/canvas/{z}/{x}/{y}', {
+        minZoom: 8,
         maxZoom: 8,
         tms: false,
-        noWrap: false,
+        noWrap: true,
         defaultRadius: 1,
+        continuousWorld: false
     }).addTo(map);
 
 </script>
