@@ -2,7 +2,9 @@ package bigdata;
 
 import org.apache.hadoop.hbase.util.Bytes;
 
-public class HBaseInfos {
+import java.io.Serializable;
+
+public class HBaseInfos implements Serializable {
     public static final byte[] TABLE_NAME = Bytes.toBytes("lgiovannange");
     public static final byte[] FAMILY_DEM3 = Bytes.toBytes("dem3");
     public static final byte[] QUALIFIER_HEIGHTVALUES = Bytes.toBytes("heightvalues");

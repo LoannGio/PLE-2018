@@ -1,9 +1,10 @@
 package bigdata;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Dem3Infos {
+public class Dem3Infos implements Serializable {
     public ArrayList<String> HeightValues = new ArrayList<String>();
     public int LatMin, LatMax, LongMin, LongMax;
     public String RowKey;

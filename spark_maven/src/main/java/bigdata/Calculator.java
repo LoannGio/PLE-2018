@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Calculator {
+public class Calculator implements Serializable{
     private static final int MAX_HEIGHT = 8000;
 
     public static Dem3Infos hgt2dem3infos(byte[] buffer, String filename, int zoomLevel){
@@ -81,7 +81,6 @@ public class Calculator {
                 ihv.add(value);
             }
         }
-        list2png(ihv, length);
 
         result.LatMin = imgToAggregate[0].LatMin;
         result.LongMin = imgToAggregate[0].LongMin;
@@ -119,35 +118,6 @@ public class Calculator {
         }
         return HeightValues2ConcatenatedStringList(aggregatedImg);
 
-    }
-
-    private static int getHVMeanmax(int i, int j, int[][][] imgTab, int ratio, int length) {
-        int x = ratio*i;
-        int y = ratio*j;
-        int limit = (length+1)/ratio;
-        int indexImageX;
-        int indexImageY;
-        int indexImage;
-        int sum = 0;
-        int cpt_err = 0;
-        for(int k = 0 ; k < ratio ; k++){
-            for(int l = 0 ; l < ratio ; l++){
-                indexImageX = (x+k)/(limit*ratio);
-                indexImageY = (y+l)/(limit*ratio);
-                if(((x + k) % length) - ((x + k - 1) % length) < 0) //BAND-AID FIX TEST
-                    indexImageX++;
-                if(((y + l) % length) - ((y + l - 1) % length) < 0) //BAND-AID FIX TEST
-                    indexImageY++;
-                indexImage = indexImageX + ratio*indexImageY;
-                if(x+k < ratio*length && y+l < ratio*length && indexImage < ratio*ratio) {
-                    sum += imgTab[indexImage][(y + l) % length][(x + k) % length];
-                }
-                else
-                    cpt_err++;
-            }
-        }
-
-        return sum/((ratio*ratio)-cpt_err);
     }
 
     private static int getHVMean(int x, int y, int[][][] imgTab, int ratio, int length) {
