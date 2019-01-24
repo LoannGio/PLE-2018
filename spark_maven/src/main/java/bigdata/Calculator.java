@@ -8,13 +8,14 @@ import java.util.ArrayList;
 
 public class Calculator {
 	private static final int MAX_HEIGHT = 8000;
-	private static final int length = 1201;
+	private static final int DEFAULT_LENGTH = 1201;
 
-	public static Dem3Infos hgt2dem3infos(byte[] buffer, String filename){
+	public static Dem3Infos hgt2dem3infos(byte[] buffer, String filename, int zoomLevel){
 		Dem3Infos result;
 		int latmin, latmax, longmin, longmax;
 		ArrayList<Integer> heightValues = new ArrayList<Integer>();
 
+		int length = DEFAULT_LENGTH * zoomLevel;
 		int[][] height = new int[length][length];
 
 		int lat = Integer.valueOf(filename.substring(1, 3));
@@ -35,8 +36,8 @@ public class Calculator {
 				}
 			}
 		}
-		heightValues = correct(height);
-		heightValues = generateValues(heightValues);
+		heightValues = correct(height, length);
+		heightValues = generateValues(heightValues, length);
 
 		latmin = lat;
 		latmax = lat +1;
@@ -45,15 +46,38 @@ public class Calculator {
 		ArrayList<String> str_heightValues = HeightValues2ConcatenatedStringList(heightValues);
 		int trueLatMin = Math.abs(latmin - 89);
 		int trueLongMin = longmin + 180;
-		String rowkey = "X" + trueLongMin +  "Y" + trueLatMin;
+		String rowkey = "X" + trueLongMin +  "Y" + trueLatMin + "Z" + zoomLevel;
 
 
-		result = new Dem3Infos(latmin, latmax, longmin, longmax, str_heightValues, filename, rowkey);
+		result = new Dem3Infos(latmin, latmax, longmin, longmax, str_heightValues, rowkey);
 		return result;
 	}
 
+	public static Dem3Infos Hbase2dem3infos(int x, int y, int zoomLevel){
+		Dem3Infos result;
+		int length = DEFAULT_LENGTH * zoomLevel;
+		Dem3Infos[] imgToAgregate = new Dem3Infos[4];
+		HBaseGet get = new HBaseGet();
+		/*
+		0 : top left
+		1 : top right
+		2 : bot left
+		3 : bot right
+		* */
+		try{
+			imgToAgregate[0] = get.getDem3Agregate(2*x, 2*y, zoomLevel-1);
+			imgToAgregate[1] = get.getDem3Agregate(2*x+1, 2*y, zoomLevel-1);
+			imgToAgregate[2] = get.getDem3Agregate(2*x, 2*y+1, zoomLevel-1);
+			imgToAgregate[3] = get.getDem3Agregate(2*x+1, 2*y+1, zoomLevel-1);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 
-	private static ArrayList<Integer> generateValues(ArrayList<Integer> heightLists){
+		return null;
+	}
+
+
+	private static ArrayList<Integer> generateValues(ArrayList<Integer> heightLists, int length){
 		ArrayList<Integer> heightValues = new ArrayList<Integer>();
 
 		double heightValue;
@@ -78,7 +102,7 @@ public class Calculator {
 		return heightValues;
 	}
 
-	private static ArrayList<Integer> correct(int [][] height) {
+	private static ArrayList<Integer> correct(int [][] height, int length) {
 		ArrayList<Integer> heightslist = new ArrayList<Integer>();
 
 		for (int i = 0; i <length; i++) {
@@ -135,7 +159,7 @@ public class Calculator {
 	}
 
 	public static void list2png(ArrayList<Integer> heightValues) {
-		int length = 1201;
+		int length = DEFAULT_LENGTH; //ZOOM LEVEL
 
 		// TYPE_INT_ARGB specifies the image format: 8-bit RGBA packed
 		// into integer pixels
@@ -186,4 +210,5 @@ public class Calculator {
 			System.out.println(e);
 		}
 	}
+
 }
