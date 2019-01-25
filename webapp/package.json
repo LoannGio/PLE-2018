@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "/espace/Auber_PLE-ripoux/hbase/bin/hbase rest start -p 8080;node server.js"
+    "start": "node server.js" // IN ANOTHER TERMINAL, RUN "/espace/Auber_PLE-005/hbase/bin/hbase rest start -p 8080" OR "/espace/Auber_PLE-ripoux/hbase/bin/hbase rest start -p 8080"
   },
   "author": "",
   "license": "ISC",
