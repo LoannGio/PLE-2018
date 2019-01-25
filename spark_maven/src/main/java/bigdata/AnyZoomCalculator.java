@@ -3,10 +3,11 @@ package bigdata;
 import java.util.ArrayList;
 
 public class AnyZoomCalculator extends Calculator{
-    public static Dem3Infos Hbase2dem3infos(int x, int y, ZoomInfos zoomInfo, HBaseGet get){
+    public static Dem3Infos Hbase2dem3infos(int x, int y, ZoomInfos zoomInfo){
         Dem3Infos result = new Dem3Infos();
         int ratio = zoomInfo.RatioToPrevZoom;
         int length = HBaseInfos.DEFAULT_LENGTH;
+        HBaseGet get = new HBaseGet();
         Dem3Infos[] imgToAggregate = new Dem3Infos[ratio * ratio];
         for(int i = 0 ; i < ratio ; i++) {
             for (int j = 0; j < ratio; j++) {
@@ -117,6 +118,8 @@ public class AnyZoomCalculator extends Calculator{
             }
         }
 
+        if(cpt_err == ratio*ratio)
+            return 0;
         return sum/((ratio*ratio)-cpt_err);
     }
 }

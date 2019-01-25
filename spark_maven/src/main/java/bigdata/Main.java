@@ -36,40 +36,37 @@ public class Main {
 
         SparkConf conf = new SparkConf().setAppName("Projet Spark");
         JavaSparkContext context = new JavaSparkContext(conf);
-        /*JavaPairRDD<String, PortableDataStream> files = context.binaryFiles("hdfs://ripoux:9000/user/raw_data/dem3/");
+        /*JavaPairRDD<String, PortableDataStream> files = context.binaryFiles("hdfs://young:9000/user/raw_data/dem3/");
 
 
-        files.foreach(fileData -> {
+        files.map(fileData -> {
             byte[] pixels = fileData._2.toArray();
             String filename = fileData._1.split("/")[fileData._1.split(("/")).length - 1];
             filename = filename.split("\\.")[0];
-            Dem3Infos infos = MaxZoomCalculator.hgt2dem3infos(pixels, filename, zoomInfos.get(0).ZoomLevel);
-            ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), infos.toStrings());
-        });*/
+            return MaxZoomCalculator.hgt2dem3infos(pixels, filename, zoomInfos.get(0).ZoomLevel);
+        }).foreach(dem3 -> {
+            ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), dem3.toStrings());
 
-
-        HBaseGet get = new HBaseGet();
-        HBaseAdd add = new HBaseAdd();
-
-        int cpt = 0;
+        });
+*/
         ArrayList<MyRDDInfos> infosToParallelize = new ArrayList<MyRDDInfos>();
-        for (int i = 1; i < zoomInfos.size(); i++) {
+        for (int i = 1; i < 2; i++) {
             for (int x = 0; x < zoomInfos.get(i).NbTilesX; x++) {
                 for (int y = 0; y < zoomInfos.get(i).NbTilesY; y++) {
-                    infosToParallelize.add(new MyRDDInfos(x,y,zoomInfos.get(i), get, add));
-                    cpt++;
+                    infosToParallelize.add(new MyRDDInfos(x,y,zoomInfos.get(i)));
                 }
             }
         }
-        System.out.println(cpt);
 
-        JavaRDD<MyRDDInfos> myRDD = context.parallelize(infosToParallelize).cache();
+        JavaRDD<MyRDDInfos> myRDD = context.parallelize(infosToParallelize);
 
-        myRDD.foreach(RDDinfos -> {
-            Dem3Infos infos = AnyZoomCalculator.Hbase2dem3infos(RDDinfos.X, RDDinfos.Y, RDDinfos.ZoomInfos, RDDinfos.Get);
-            ToolRunner.run(HBaseConfiguration.create(), RDDinfos.Add, infos.toStrings());
+        myRDD.mapToPair().sortByKey();
+        myRDD.foreach();
+
+        myRDD.map(RDDinfos -> AnyZoomCalculator.Hbase2dem3infos(RDDinfos.X, RDDinfos.Y, RDDinfos.ZoomInfos))
+                .foreach(dem3 -> {
+            ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), dem3.toStrings());
         });
-
         //get.close();
         //add.close();
     }
