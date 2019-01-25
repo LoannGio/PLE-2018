@@ -7,20 +7,15 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.input.PortableDataStream;
-import scala.Array;
-import scala.Tuple2;
+import org.apache.spark.rdd.RDD;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-
-import static bigdata.Calculator.hgt2dem3infos;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        ToolRunner.run(HBaseConfiguration.create(), new HBaseCreate(), args);
+        //ToolRunner.run(HBaseConfiguration.create(), new HBaseCreate(), args);
 
 		/*
 		Foreach zoomLevel, number of zoomLevel-1 images to create the new one
@@ -41,38 +36,39 @@ public class Main {
 
         SparkConf conf = new SparkConf().setAppName("Projet Spark");
         JavaSparkContext context = new JavaSparkContext(conf);
-        JavaPairRDD<String, PortableDataStream> files = context.binaryFiles("hdfs://ripoux:9000/user/raw_data/dem3/");
+        /*JavaPairRDD<String, PortableDataStream> files = context.binaryFiles("hdfs://young:9000/user/raw_data/dem3/");
 
 
-        files.foreach(fileData -> {
+        files.map(fileData -> {
             byte[] pixels = fileData._2.toArray();
             String filename = fileData._1.split("/")[fileData._1.split(("/")).length - 1];
             filename = filename.split("\\.")[0];
-            Dem3Infos infos = hgt2dem3infos(pixels, filename, zoomInfos.get(0).ZoomLevel);
-            ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), infos.toStrings());
+            return MaxZoomCalculator.hgt2dem3infos(pixels, filename, zoomInfos.get(0).ZoomLevel);
+        }).foreach(dem3 -> {
+            ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), dem3.toStrings());
+
         });
-
-
-
-
-        /*
-        for (int i = 1; i < zoomInfos.size(); i++) {
-            ArrayList<Tuple2> myTuples = new ArrayList<Tuple2>();
+*/
+        ArrayList<MyRDDInfos> infosToParallelize = new ArrayList<MyRDDInfos>();
+        for (int i = 1; i < 2; i++) {
             for (int x = 0; x < zoomInfos.get(i).NbTilesX; x++) {
                 for (int y = 0; y < zoomInfos.get(i).NbTilesY; y++) {
-                    Tuple2<Integer, Integer> tuple = new Tuple2<Integer, Integer>(x, y);
-                    myTuples.add(tuple);
+                    infosToParallelize.add(new MyRDDInfos(x,y,zoomInfos.get(i)));
                 }
             }
-            JavaRDD<Tuple2> tupleRDD = context.parallelize(myTuples);
-            int finalI = i;
-            tupleRDD.foreach(tuple -> {
-                Dem3Infos infos = Calculator.Hbase2dem3infos((int) tuple._1, (int) tuple._2, zoomInfos.get(finalI));
-                ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), infos.toStrings());
-            });
         }
-        */
 
+        JavaRDD<MyRDDInfos> myRDD = context.parallelize(infosToParallelize);
+
+        myRDD.mapToPair().sortByKey();
+        myRDD.foreach();
+
+        myRDD.map(RDDinfos -> AnyZoomCalculator.Hbase2dem3infos(RDDinfos.X, RDDinfos.Y, RDDinfos.ZoomInfos))
+                .foreach(dem3 -> {
+            ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), dem3.toStrings());
+        });
+        //get.close();
+        //add.close();
     }
     //Calculator.Hbase2dem3infos(189/2, 47/2, zoomInfos.get(1));
 }
