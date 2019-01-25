@@ -14,18 +14,6 @@ import java.io.Serializable;
 public class HBaseGet extends Configured implements Tool, Serializable {
     public Dem3Infos infos = new Dem3Infos();
 
-    /*private Connection connection;
-    private Table table;
-
-    public HBaseGet(){
-        super();
-        try {
-            connection = ConnectionFactory.createConnection(getConf());
-            table = connection.getTable(TableName.valueOf(HBaseInfos.TABLE_NAME));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     @Override
     public int run(String[] args) throws Exception {
@@ -48,14 +36,22 @@ public class HBaseGet extends Configured implements Tool, Serializable {
         for(String s : tmp.split(", ")){
             infos.HeightValues.add(s);
         }
+
+        table.close();
+        connection.close();
         return 1;
     }
 
-    public Dem3Infos getDem3FromHBase(int x, int y, int zoomLevel) throws Exception {
+    public Dem3Infos getDem3FromHBase(int x, int y, int zoomLevel) {
         String[] params = new String[1];
         params[0] = "X"+x+"Y"+y+"Z"+zoomLevel;
-        int exitStatus =  ToolRunner.run(HBaseConfiguration.create(), this, params);
+        int exitStatus = 0;
+        try{
+            exitStatus =  ToolRunner.run(HBaseConfiguration.create(), this, params);
+        }catch(Exception e){
+            e.printStackTrace();
 
+        }
 
         if(exitStatus == 0){
             //No dem3 found, create water
@@ -68,15 +64,7 @@ public class HBaseGet extends Configured implements Tool, Serializable {
             String hv = lenght2dto1d + "x" + 0;
             infos.HeightValues.add(hv);
         }
+
         return infos;
     }
-
-    /*public void close(){
-        try {
-            table.close();
-            connection.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 }

@@ -7,8 +7,8 @@ public class AnyZoomCalculator extends Calculator{
         Dem3Infos result = new Dem3Infos();
         int ratio = zoomInfo.RatioToPrevZoom;
         int length = HBaseInfos.DEFAULT_LENGTH;
-        HBaseGet get = new HBaseGet();
         Dem3Infos[] imgToAggregate = new Dem3Infos[ratio * ratio];
+        HBaseGet get = new HBaseGet();
         for(int i = 0 ; i < ratio ; i++) {
             for (int j = 0; j < ratio; j++) {
                 try {
