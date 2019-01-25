@@ -8,6 +8,9 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.input.PortableDataStream;
 import org.apache.spark.rdd.RDD;
+import org.apache.hadoop.conf.Configuration;
+
+import scala.Tuple2;
 
 import java.util.ArrayList;
 
@@ -36,7 +39,7 @@ public class Main {
 
         SparkConf conf = new SparkConf().setAppName("Projet Spark");
         JavaSparkContext context = new JavaSparkContext(conf);
-        /*JavaPairRDD<String, PortableDataStream> files = context.binaryFiles("hdfs://young:9000/user/raw_data/dem3/");
+        /*JavaPairRDD<String, PortableDataStream> files = context.binaryFiles("hdfs://ripoux:9000/user/raw_data/dem3/");
 
 
         files.map(fileData -> {
@@ -60,15 +63,19 @@ public class Main {
 
         JavaRDD<MyRDDInfos> myRDD = context.parallelize(infosToParallelize);
 
-        myRDD.mapToPair().sortByKey();
-        myRDD.foreach();
-
-        myRDD.map(RDDinfos -> AnyZoomCalculator.Hbase2dem3infos(RDDinfos.X, RDDinfos.Y, RDDinfos.ZoomInfos))
-                .foreach(dem3 -> {
-            ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), dem3.toStrings());
+        JavaPairRDD<Integer, Dem3Infos> sortedRDD = myRDD.mapToPair(RDDinfos -> {
+            int key = RDDinfos.ZoomInfos.ZoomLevel;
+            Dem3Infos value =  AnyZoomCalculator.Hbase2dem3infos(RDDinfos.X, RDDinfos.Y, RDDinfos.ZoomInfos);
+            return new Tuple2<Integer, Dem3Infos>(key, value);
         });
-        //get.close();
-        //add.close();
+        sortedRDD.sortByKey();
+
+
+        /*sortedRDD.foreach(dem3 -> {
+            System.out.println(dem3._2.toStrings()[5]);
+            ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), dem3._2.toStrings());
+        });*/
+
     }
     //Calculator.Hbase2dem3infos(189/2, 47/2, zoomInfos.get(1));
 }
