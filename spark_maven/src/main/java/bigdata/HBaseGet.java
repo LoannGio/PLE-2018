@@ -2,20 +2,30 @@ package bigdata;
 
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class HBaseGet extends Configured implements Tool, Serializable {
     public Dem3Infos infos = new Dem3Infos();
+
+    /*private Connection connection;
+    private Table table;
+
+    public HBaseGet(){
+        super();
+        try {
+            connection = ConnectionFactory.createConnection(getConf());
+            table = connection.getTable(TableName.valueOf(HBaseInfos.TABLE_NAME));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
 
     @Override
     public int run(String[] args) throws Exception {
@@ -38,15 +48,12 @@ public class HBaseGet extends Configured implements Tool, Serializable {
         for(String s : tmp.split(", ")){
             infos.HeightValues.add(s);
         }
-
-        table.close();
-        connection.close();
         return 1;
     }
 
     public Dem3Infos getDem3FromHBase(int x, int y, int zoomLevel) throws Exception {
         String[] params = new String[1];
-        params[0] = "X"+x+"Y"+y;//+"Z"+zoomLevel;
+        params[0] = "X"+x+"Y"+y+"Z"+zoomLevel;
         int exitStatus =  ToolRunner.run(HBaseConfiguration.create(), this, params);
 
 
@@ -63,4 +70,13 @@ public class HBaseGet extends Configured implements Tool, Serializable {
         }
         return infos;
     }
+
+    /*public void close(){
+        try {
+            table.close();
+            connection.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
 }

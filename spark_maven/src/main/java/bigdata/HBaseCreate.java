@@ -42,6 +42,7 @@ public class HBaseCreate extends Configured implements Tool, Serializable {
     public int run(String[] args) throws IOException {
         Connection connection = ConnectionFactory.createConnection(getConf());
         createTable(connection);
+        connection.close();
         return 0;
     }
 }
