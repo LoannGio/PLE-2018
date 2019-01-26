@@ -1,28 +1,75 @@
 package bigdata;
 
+import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.apache.spark.storage.RDDInfo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class AnyZoomCalculator extends Calculator{
-  /*  public static Dem3Infos Hbase2dem3infos(MyRDDInfos RDDinfos){
+public class GenerateAnyZoomLevel extends Configured implements Tool, Serializable {
+    @Override
+    public int run(String[] args) throws Exception {
+        int ratio = Integer.valueOf(args[3]);
+        int z = Integer.valueOf(args[2]);
+        int x = Integer.valueOf(args[0]);
+        int y = Integer.valueOf(args[1]);
+
         Dem3Infos result = new Dem3Infos();
-        int ratio = RDDinfos.ZoomInfos.RatioToPrevZoom;
-        int length = HBaseInfos.DEFAULT_LENGTH;
+
         Dem3Infos[] imgToAggregate = new Dem3Infos[ratio * ratio];
-        HBaseGet get = new HBaseGet();
+        Dem3Infos tmp;
+        int tmpx, tmpy;
+        String tmp_rowkey;
+        int previousZoomLevel = z -1;
+        Connection connection = ConnectionFactory.createConnection(getConf());
+        Table table = connection.getTable(TableName.valueOf(HBaseInfos.TABLE_NAME));
         for(int i = 0 ; i < ratio ; i++) {
+            tmpx = ratio * x +i;
             for (int j = 0; j < ratio; j++) {
                 try {
-                    imgToAggregate[ratio * i + j] = get.getDem3FromHBase(ratio * RDDinfos.X + i, ratio * RDDinfos.Y + j, RDDinfos.ZoomInfos.ZoomLevel - 1);
+                    tmpy = ratio*y+j;
+                    tmp_rowkey = "X"+tmpx+"Y"+tmpy+"Z"+previousZoomLevel;
+                    byte[] rowkey = Bytes.toBytes(tmp_rowkey);
+                    Result res = table.get(new Get(rowkey));
+                    tmp = new Dem3Infos();
+                    if(res.isEmpty()){
+                        //No dem3 found, create water
+                        tmp.LatMin = y;
+                        tmp.LatMax = y +1;
+                        tmp.LongMin = x;
+                        tmp.LongMax = x +1;
+                        tmp.RowKey = tmp_rowkey;
+                        int lenght2dto1d = HBaseInfos.DEFAULT_LENGTH * HBaseInfos.DEFAULT_LENGTH;
+                        String hv = lenght2dto1d + "x" + 0;
+                        tmp.HeightValues.add(hv);
+                    }else{
+                        tmp.RowKey = tmp_rowkey;
+                        tmp.LatMin = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMIN)));
+                        tmp.LatMax = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMAX)));
+                        tmp.LongMin = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LONGMIN)));
+                        tmp.LongMax = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LONGMAX)));
+
+                        String hv = Bytes.toString(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_HEIGHTVALUES));
+
+                        for(String s : hv.split(", ")){
+                            tmp.HeightValues.add(s);
+                        }
+                    }
+                    imgToAggregate[ratio * i + j] = tmp;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-        result.HeightValues = aggregateHeightValues(imgToAggregate, ratio, length);
+        table.close();
+        connection.close();
+
+        result.HeightValues = aggregateHeightValues(imgToAggregate, ratio, HBaseInfos.DEFAULT_LENGTH);
         int occur, value;
         ArrayList<Integer> ihv = new ArrayList<Integer>();
         for(String s : result.HeightValues){
@@ -37,12 +84,12 @@ public class AnyZoomCalculator extends Calculator{
         result.LongMin = imgToAggregate[0].LongMin;
         result.LatMax = imgToAggregate[ratio*ratio-1].LatMax;
         result.LongMax = imgToAggregate[ratio*ratio-1].LongMax;
-        result.RowKey = "X"+RDDinfos.X+"Y"+RDDinfos.Y+"Z"+RDDinfos.ZoomInfos.ZoomLevel;
+        result.RowKey = "X"+x+"Y"+y+"Z"+z;
 
-        return result;
+        return ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), result.toStrings());
     }
 
-    private static ArrayList<String> aggregateHeightValues(Dem3Infos[] imgToAggregate, int ratio, int length){
+    private ArrayList<String> aggregateHeightValues(Dem3Infos[] imgToAggregate, int ratio, int length){
         int [][][]imgTab = new int[imgToAggregate.length][length][length];
         for(int i = 0 ; i < imgToAggregate.length ; i++) {
             imgTab[i] = HVString2HVInt(imgToAggregate[i].HeightValues);
@@ -67,11 +114,11 @@ public class AnyZoomCalculator extends Calculator{
                 aggregatedImg.add(finalImg[i][j]);
             }
         }
-        return HeightValues2ConcatenatedStringList(aggregatedImg);
+        return Calculator.HeightValues2ConcatenatedStringList(aggregatedImg);
 
     }
 
-    private static int[][] HVString2HVInt(ArrayList<String> str_hv) {
+    private int[][] HVString2HVInt(ArrayList<String> str_hv) {
         int i = 0;
         int j = 0;
         int occur=-1;
@@ -96,7 +143,7 @@ public class AnyZoomCalculator extends Calculator{
         return hv;
     }
 
-    private static int getHVMean(int i, int j, int[][][] imgTab, int ratio, int length) {
+    private int getHVMean(int i, int j, int[][][] imgTab, int ratio, int length) {
         int x = ratio*i;
         int y = ratio*j;
         int limit = (length+1)/ratio;
@@ -125,5 +172,5 @@ public class AnyZoomCalculator extends Calculator{
         if(cpt_err == ratio*ratio)
             return 0;
         return sum/((ratio*ratio)-cpt_err);
-    }*/
+    }
 }

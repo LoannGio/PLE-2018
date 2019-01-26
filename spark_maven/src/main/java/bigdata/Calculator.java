@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-abstract public class Calculator implements Serializable{
+public class Calculator implements Serializable{
 
     public static ArrayList<String> HeightValues2ConcatenatedStringList(ArrayList<Integer> heightValues){
         ArrayList<String> res = new ArrayList<String>();

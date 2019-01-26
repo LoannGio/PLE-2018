@@ -1,7 +1,9 @@
 package bigdata;
 
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -14,7 +16,6 @@ import java.io.Serializable;
 public class HBaseGet extends Configured implements Tool, Serializable {
     public Dem3Infos infos = new Dem3Infos();
 
-
     @Override
     public int run(String[] args) throws Exception {
         Connection connection = ConnectionFactory.createConnection(getConf());
@@ -23,7 +24,7 @@ public class HBaseGet extends Configured implements Tool, Serializable {
         Result res = table.get(new Get(rowkey));
         infos = new Dem3Infos();
         if(res.isEmpty())
-            return 0;
+            return 1;
 
         infos.RowKey = args[0];
         infos.LatMin = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMIN)));
@@ -37,9 +38,9 @@ public class HBaseGet extends Configured implements Tool, Serializable {
             infos.HeightValues.add(s);
         }
 
-        table.close();
-        connection.close();
-        return 1;
+        //table.close();
+        //connection.close();
+        return 0;
     }
 
     public Dem3Infos getDem3FromHBase(int x, int y, int zoomLevel) {
@@ -53,7 +54,7 @@ public class HBaseGet extends Configured implements Tool, Serializable {
 
         }
 
-        if(exitStatus == 0){
+        if(exitStatus == 1){
             //No dem3 found, create water
             infos.LatMin = y;
             infos.LatMax = y +1;

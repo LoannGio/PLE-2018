@@ -1,13 +1,19 @@
 package bigdata;
 
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.input.PortableDataStream;
+import org.apache.spark.rdd.JdbcRDD;
 import org.apache.spark.rdd.RDD;
+import org.apache.hadoop.hbase.TableName;
+
 import org.apache.hadoop.conf.Configuration;
 
 import scala.Tuple2;
@@ -52,25 +58,37 @@ public class Main {
 
         });
 */
-        ArrayList<MyRDDInfos> infosToParallelize = new ArrayList<MyRDDInfos>();
-        for (int i = 1; i < 2; i++) {
+        JavaRDD<MyRDDInfos> myRDD;
+        ArrayList<MyRDDInfos> infosToParallelize;
+
+        for(int i = 1; i < zoomInfos.size(); i++){
+            infosToParallelize = new ArrayList<MyRDDInfos>();
             for (int x = 0; x < zoomInfos.get(i).NbTilesX; x++) {
                 for (int y = 0; y < zoomInfos.get(i).NbTilesY; y++) {
                     infosToParallelize.add(new MyRDDInfos(x,y,zoomInfos.get(i)));
                 }
             }
+            myRDD = context.parallelize(infosToParallelize);
+            myRDD.foreach(RDDinfos -> {
+                System.out.println("X"+RDDinfos.X + "Y"+RDDinfos.Y + "Z" + RDDinfos.ZoomInfos.ZoomLevel);
+                ToolRunner.run(HBaseConfiguration.create(), new GenerateAnyZoomLevel(), RDDinfos.toStrings());
+            });
         }
 
-        JavaRDD<MyRDDInfos> myRDD = context.parallelize(infosToParallelize);
 
-        JavaPairRDD<Integer, Dem3Infos> sortedRDD = myRDD.mapToPair(RDDinfos -> {
+/*
+        myRDD = context.parallelize(infosToParallelize);
+        JavaPairRDD<Integer, MyRDDInfos> sortedRDD = myRDD.mapToPair(RDDinfos -> {
             int key = RDDinfos.ZoomInfos.ZoomLevel;
-            Dem3Infos value =  AnyZoomCalculator.Hbase2dem3infos(RDDinfos.X, RDDinfos.Y, RDDinfos.ZoomInfos);
-            return new Tuple2<Integer, Dem3Infos>(key, value);
+            return new Tuple2<Integer, MyRDDInfos>(key, RDDinfos);
         });
         sortedRDD.sortByKey();
 
-
+        sortedRDD.foreach(tuple -> {
+            System.out.println("X"+tuple._2.X + "Y"+tuple._2.Y + "Z" + tuple._1);
+            ToolRunner.run(HBaseConfiguration.create(), new GenerateAnyZoomLevel(), tuple._2.toStrings());
+        });
+*/
         /*sortedRDD.foreach(dem3 -> {
             System.out.println(dem3._2.toStrings()[5]);
             ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), dem3._2.toStrings());

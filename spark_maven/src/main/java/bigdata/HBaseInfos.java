@@ -1,10 +1,14 @@
 package bigdata;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.util.Bytes;
 
 
+import java.io.IOException;
 import java.io.Serializable;
 
 public class HBaseInfos implements Serializable {
@@ -16,7 +20,5 @@ public class HBaseInfos implements Serializable {
     public static final byte[] QUALIFIER_LONGMIN = Bytes.toBytes("longmin");
     public static final byte[] QUALIFIER_LONGMAX = Bytes.toBytes("longmax");
     public static final int DEFAULT_LENGTH = 1201;
-
-
 
 }
