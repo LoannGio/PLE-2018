@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const logger = require('morgan');
-const port = 3250;
+const port = 3251;
 const hbase = require('hbase');
 const { createImageData, Canvas } = require('canvas');
 
@@ -17,25 +17,13 @@ app.get('/', function (req, res) {  //index
   res.render('index', { title: 'BigData Viewer' });
 });
 
-app.get('/img', function (req, res) {
-  client.table('lgiovannange').row('N42E009.hgt').get('data', function (err, cell) {
-    let str = JSON.stringify(cell).substring(1, JSON.stringify(cell).length - 1);
-    let obj = JSON.parse(str);
-    res.setHeader('Content-Type', 'application/json');
-    res.send(obj);
-  });
-});
-
-
 app.get('/canvas/:z/:x/:y', function (req, res) {
   let x = req.params.x;
   let y = req.params.y;
   let z = 10 - Number(req.params.z);
 
-  console.log('x : ' + x + ', y : ' + y + ', z : ' + z);
 
   let rowkey = "X" + x + "Y" + y + "Z" + z;
-  console.log('après envoi : ' + rowkey);
   client.table('lgiovannange').row(rowkey).get('dem3:heightvalues', function (err, cell) {
     let length = 1201;
     let arraySize = length * length * 4;

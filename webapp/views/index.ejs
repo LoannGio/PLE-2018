@@ -19,11 +19,14 @@
 </html>
 
 <script>
-    let map = L.map('mapid').setMinZoom(9).setMaxZoom(9).setView([100,0], 9);
+    let map = L.map('mapid').setMinZoom(4).setMaxZoom(9).setView([100,0], 9);
+
+    const nbTuilesX = [360,180,90,30,10,2];
 
     L.TileLayer.MyCustomLayer = L.TileLayer.extend({
         getTileUrl: function (coords) {
-            coords.x = coords.x % 360;
+            let zoomLevel = 10 - coords.z;
+            coords.x = coords.x % 360;//nbTuilesX[zoomLevel];
             //console.log('avant envoi - x : ' + coords.x + " - y : " + coords.y + " - z : " + coords.z);
             //if(coords.y <= 180)
             return L.TileLayer.prototype.getTileUrl.call(this, coords);
@@ -34,8 +37,8 @@
         return new L.TileLayer.MyCustomLayer(templateUrl, options);
     }
 
-    L.tileLayer.myCustomLayer('http://young:3250/canvas/{z}/{x}/{y}', {
-        minZoom: 9,
+    L.tileLayer.myCustomLayer('http://young:3251/canvas/{z}/{x}/{y}', {
+        minZoom: 4,
         maxZoom: 9,
         tms: false,
         noWrap: true,

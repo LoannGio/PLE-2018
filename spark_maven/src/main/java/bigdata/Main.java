@@ -70,11 +70,9 @@ public class Main {
             }
             myRDD = context.parallelize(infosToParallelize);
             myRDD.foreach(RDDinfos -> {
-                System.out.println("X"+RDDinfos.X + "Y"+RDDinfos.Y + "Z" + RDDinfos.ZoomInfos.ZoomLevel);
                 ToolRunner.run(HBaseConfiguration.create(), new GenerateAnyZoomLevel(), RDDinfos.toStrings());
             });
         }
-
 
 /*
         myRDD = context.parallelize(infosToParallelize);
