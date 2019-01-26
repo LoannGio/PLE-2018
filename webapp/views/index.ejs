@@ -26,7 +26,7 @@
     L.TileLayer.MyCustomLayer = L.TileLayer.extend({
         getTileUrl: function (coords) {
             let zoomLevel = 10 - coords.z;
-            coords.x = coords.x % 360;//nbTuilesX[zoomLevel];
+            coords.x = coords.x % nbTuilesX[zoomLevel -1];
             //console.log('avant envoi - x : ' + coords.x + " - y : " + coords.y + " - z : " + coords.z);
             //if(coords.y <= 180)
             return L.TileLayer.prototype.getTileUrl.call(this, coords);
@@ -37,7 +37,7 @@
         return new L.TileLayer.MyCustomLayer(templateUrl, options);
     }
 
-    L.tileLayer.myCustomLayer('http://young:3251/canvas/{z}/{x}/{y}', {
+    L.tileLayer.myCustomLayer('http://young:4000/canvas/{z}/{x}/{y}', {
         minZoom: 4,
         maxZoom: 9,
         tms: false,
