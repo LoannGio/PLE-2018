@@ -19,7 +19,7 @@
 </html>
 
 <script>
-    let map = L.map('mapid').setMinZoom(9).setMaxZoom(9).setView([100,0], 9);
+    let map = L.map('mapid').setMinZoom(4).setMaxZoom(9).setView([100,0], 9);
 
     L.TileLayer.MyCustomLayer = L.TileLayer.extend({
         getTileUrl: function (coords) {
@@ -35,7 +35,7 @@
     }
 
     L.tileLayer.myCustomLayer('http://young:3250/canvas/{z}/{x}/{y}', {
-        minZoom: 9,
+        minZoom: 4,
         maxZoom: 9,
         tms: false,
         noWrap: true,
