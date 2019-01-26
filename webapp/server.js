@@ -2,11 +2,11 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const logger = require('morgan');
-const port = 4000;
+const port = 3250;
 const hbase = require('hbase');
 const { createImageData, Canvas } = require('canvas');
 
-let client = hbase({ host: '10.0.213.28', port: 8080 });
+let client = hbase({ host: '10.0.5.25', port: 8080 });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,11 +30,11 @@ app.get('/img', function (req, res) {
 app.get('/canvas/:z/:x/:y', function (req, res) {
   let x = req.params.x;
   let y = req.params.y;
-  let z = req.params.z;
+  let z = 10 - Number(req.params.z);
 
   console.log('x : ' + x + ', y : ' + y + ', z : ' + z);
 
-  let rowkey = "X" + x + "Y" + y;
+  let rowkey = "X" + x + "Y" + y + "Z" + z;
   console.log('après envoi : ' + rowkey);
   client.table('lgiovannange').row(rowkey).get('dem3:heightvalues', function (err, cell) {
     let length = 1201;
