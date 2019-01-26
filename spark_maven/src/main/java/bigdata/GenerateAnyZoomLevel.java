@@ -146,31 +146,33 @@ public class GenerateAnyZoomLevel extends Configured implements Tool, Serializab
     private int getHVMean(int i, int j, int[][][] imgTab, int ratio, int length) {
         int x = ratio*i;
         int y = ratio*j;
-        int limit = (length+1)/ratio;
+        int limit;// = (length+1)/ratio;
         int indexImageX;
         int indexImageY;
         int indexImage;
         int sum = 0;
-        int cpt_err = 0;
+        //int cpt_err = 0;
         for(int k = 0 ; k < ratio ; k++){
             for(int l = 0 ; l < ratio ; l++){
-                indexImageX = (x+k)/(limit*ratio);
-                indexImageY = (y+l)/(limit*ratio);
-                if(((x + k) % length) - ((x + k - 1) % length) < 0) //BAND-AID FIX TEST
+                indexImageX = (x+k)/(length);
+                indexImageY = (y+l)/(length);
+                /*if(((x + k) % length) - ((x + k - 1) % length) < 0) //BAND-AID FIX TEST
                     indexImageX++;
                 if(((y + l) % length) - ((y + l - 1) % length) < 0) //BAND-AID FIX TEST
-                    indexImageY++;
+                    indexImageY++;*/
                 indexImage = indexImageX + ratio*indexImageY;
-                if(x+k < ratio*length && y+l < ratio*length && indexImage < ratio*ratio) {
+                sum += imgTab[indexImage][(y+l)%length][(x+k)%length];
+                /*if(x+k < ratio*length && y+l < ratio*length && indexImage < ratio*ratio) {
                     sum += imgTab[indexImage][(y + l) % length][(x + k) % length];
                 }
                 else
-                    cpt_err++;
+                    cpt_err++;*/
             }
         }
 
-        if(cpt_err == ratio*ratio)
+        return sum/(ratio*ratio);
+        /*if(cpt_err == ratio*ratio)
             return 0;
-        return sum/((ratio*ratio)-cpt_err);
+        return sum/((ratio*ratio)-cpt_err);*/
     }
 }
