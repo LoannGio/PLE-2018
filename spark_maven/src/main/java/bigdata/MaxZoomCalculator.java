@@ -84,11 +84,11 @@ public class MaxZoomCalculator extends Calculator{
 
         int nb_checkers = 150;
         for(int i = 0; i < heightslist.size(); i++){
-            if(heightslist.get(i) > 9000){
+            if(heightslist.get(i) > 9000 || heightslist.get(i) < 0){
                 int sum = 0;
                 int cpt = 0;
                 for(int p = (i-nb_checkers >= 0)?(i-nb_checkers):0; p < ((i+nb_checkers < heightslist.size())?(i+nb_checkers):(heightslist.size())); p++){
-                    if(heightslist.get(p) <= 9000){
+                    if(heightslist.get(p) <= 9000 && heightslist.get(p) >= 0){
                         sum += heightslist.get(p);
                         cpt++;
                     }

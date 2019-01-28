@@ -21,11 +21,6 @@ app.get('/canvas/:z/:x/:y', function (req, res) {
   let x = req.params.x;
   let y = req.params.y;
   let z = 10 - Number(req.params.z);
-  /*if (z > 1) {
-    const zoomRatio = [1, 2, 2, 3, 3, 5];
-    x = x * Math.floor(2, zoomRatio[z-1]);
-    y = y * Math.floor(2, zoomRatio[z-1]);
-  }*/
   let rowkey = "X" + x + "Y" + y + "Z" + z;
   console.log(rowkey);
   client.table('lgiovannange').row(rowkey).get('dem3:heightvalues', function (err, cell) {
