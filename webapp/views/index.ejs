@@ -19,17 +19,20 @@
 </html>
 
 <script>
-    let map = L.map('mapid').setMinZoom(4).setMaxZoom(9).setView([100,0], 9);
 
-    const nbTuilesX = [360,180,90,30,10,2];
+    let map = L.map('mapid').zoomIn().setMinZoom(4).setMaxZoom(9).setView([80, 0], 9);
+
+    const nbTuilesX = [360, 180, 90, 30, 10, 2];
 
     L.TileLayer.MyCustomLayer = L.TileLayer.extend({
         getTileUrl: function (coords) {
             let zoomLevel = 10 - coords.z;
-            coords.x = coords.x % nbTuilesX[zoomLevel -1];
-            //console.log('avant envoi - x : ' + coords.x + " - y : " + coords.y + " - z : " + coords.z);
-            //if(coords.y <= 180)
-            return L.TileLayer.prototype.getTileUrl.call(this, coords);
+            let currentNbTuilesX = nbTuilesX[zoomLevel - 1];
+            while(coords.x < 0)
+                coords.x += currentNbTuilesX;
+            coords.x = coords.x % currentNbTuilesX;
+            if (coords.y < (nbTuilesX[zoomLevel - 1] / 2))
+                return L.TileLayer.prototype.getTileUrl.call(this, coords);
         }
     });
 
