@@ -10,7 +10,7 @@ public class MaxZoomCalculator extends Calculator{
         int latmin, latmax, longmin, longmax;
         ArrayList<Integer> heightValues = new ArrayList<Integer>();
 
-        int length = HBaseInfos.DEFAULT_LENGTH;
+        int length = Infos.DEFAULT_LENGTH;
         int[][] height = new int[length][length];
 
         int lat = Integer.valueOf(filename.substring(1, 3));

@@ -27,7 +27,7 @@ public class GenerateAnyZoomLevel extends Configured implements Tool, Serializab
         String tmp_rowkey;
         int previousZoomLevel = z -1;
         Connection connection = ConnectionFactory.createConnection(getConf());
-        Table table = connection.getTable(TableName.valueOf(HBaseInfos.TABLE_NAME));
+        Table table = connection.getTable(TableName.valueOf(Infos.TABLE_NAME));
         for(int i = 0 ; i < ratio ; i++) {
             tmpx = ratio * x +i;
             for (int j = 0; j < ratio; j++) {
@@ -44,17 +44,17 @@ public class GenerateAnyZoomLevel extends Configured implements Tool, Serializab
                         tmp.LongMin = x;
                         tmp.LongMax = x +1;
                         tmp.RowKey = tmp_rowkey;
-                        int lenght2dto1d = HBaseInfos.DEFAULT_LENGTH * HBaseInfos.DEFAULT_LENGTH;
+                        int lenght2dto1d = Infos.DEFAULT_LENGTH * Infos.DEFAULT_LENGTH;
                         String hv = lenght2dto1d + "x" + 0;
                         tmp.HeightValues.add(hv);
                     }else{
                         tmp.RowKey = tmp_rowkey;
-                        tmp.LatMin = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMIN)));
-                        tmp.LatMax = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMAX)));
-                        tmp.LongMin = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LONGMIN)));
-                        tmp.LongMax = Integer.valueOf(new String(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LONGMAX)));
+                        tmp.LatMin = Integer.valueOf(new String(res.getValue(Infos.FAMILY_DEM3, Infos.QUALIFIER_LATMIN)));
+                        tmp.LatMax = Integer.valueOf(new String(res.getValue(Infos.FAMILY_DEM3, Infos.QUALIFIER_LATMAX)));
+                        tmp.LongMin = Integer.valueOf(new String(res.getValue(Infos.FAMILY_DEM3, Infos.QUALIFIER_LONGMIN)));
+                        tmp.LongMax = Integer.valueOf(new String(res.getValue(Infos.FAMILY_DEM3, Infos.QUALIFIER_LONGMAX)));
 
-                        String hv = Bytes.toString(res.getValue(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_HEIGHTVALUES));
+                        String hv = Bytes.toString(res.getValue(Infos.FAMILY_DEM3, Infos.QUALIFIER_HEIGHTVALUES));
 
                         for(String s : hv.split(", ")){
                             tmp.HeightValues.add(s);
@@ -69,7 +69,7 @@ public class GenerateAnyZoomLevel extends Configured implements Tool, Serializab
         table.close();
         connection.close();
 
-        result.HeightValues = aggregateHeightValues(imgToAggregate, ratio, HBaseInfos.DEFAULT_LENGTH);
+        result.HeightValues = aggregateHeightValues(imgToAggregate, ratio, Infos.DEFAULT_LENGTH);
         int occur, value;
         ArrayList<Integer> ihv = new ArrayList<Integer>();
         for(String s : result.HeightValues){
@@ -124,14 +124,14 @@ public class GenerateAnyZoomLevel extends Configured implements Tool, Serializab
         int occur=-1;
         int value = -1;
 
-        int [][]hv = new int[HBaseInfos.DEFAULT_LENGTH][HBaseInfos.DEFAULT_LENGTH];
+        int [][]hv = new int[Infos.DEFAULT_LENGTH][Infos.DEFAULT_LENGTH];
         for(int l = 0 ; l < str_hv.size() ; l++){
             String s = str_hv.get(l);
             occur = Integer.valueOf(s.split("x")[0]);
             value = Integer.valueOf(s.split("x")[1]);
             for(int k = 0 ; k < occur ; k++) {
                 hv[i][j] = value;
-                if(i < HBaseInfos.DEFAULT_LENGTH - 1) {
+                if(i < Infos.DEFAULT_LENGTH - 1) {
                     i++;
                 }
                 else {

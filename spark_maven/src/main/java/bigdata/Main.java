@@ -35,7 +35,7 @@ public class Main {
 
         SparkConf conf = new SparkConf().setAppName("Projet Spark");
         JavaSparkContext context = new JavaSparkContext(conf);
-        /*JavaPairRDD<String, PortableDataStream> files = context.binaryFiles("hdfs://ripoux:9000/user/raw_data/dem3/");
+        /*JavaPairRDD<String, PortableDataStream> files = context.binaryFiles(Infos.HDFS_DIRECTORY);
 
 
         files.map(fileData -> {

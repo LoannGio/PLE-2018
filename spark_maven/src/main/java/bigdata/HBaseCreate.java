@@ -1,14 +1,11 @@
 package bigdata;
 
-import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -26,8 +23,8 @@ public class HBaseCreate extends Configured implements Tool, Serializable {
     private static void createTable(Connection connect) {
         try {
             final Admin admin = connect.getAdmin();
-            HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf(HBaseInfos.TABLE_NAME));
-            HColumnDescriptor famDem3 = new HColumnDescriptor(HBaseInfos.FAMILY_DEM3);
+            HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf(Infos.TABLE_NAME));
+            HColumnDescriptor famDem3 = new HColumnDescriptor(Infos.FAMILY_DEM3);
             tableDescriptor.addFamily(famDem3);
             createOrOverwrite(admin, tableDescriptor);
             admin.close();

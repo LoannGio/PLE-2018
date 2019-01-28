@@ -16,13 +16,13 @@ public class HBaseAdd extends Configured implements Tool, Serializable {
     @Override
     public int run(String[] infos) throws Exception {
         Connection connection = ConnectionFactory.createConnection(getConf());
-        Table table = connection.getTable(TableName.valueOf(HBaseInfos.TABLE_NAME));
+        Table table = connection.getTable(TableName.valueOf(Infos.TABLE_NAME));
         Put put = new Put(Bytes.toBytes(infos[5]));
-        put.addColumn(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMIN, Bytes.toBytes(infos[0]));
-        put.addColumn(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LATMAX, Bytes.toBytes(infos[1]));
-        put.addColumn(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LONGMIN, Bytes.toBytes(infos[2]));
-        put.addColumn(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_LONGMAX, Bytes.toBytes(infos[3]));
-        put.addColumn(HBaseInfos.FAMILY_DEM3, HBaseInfos.QUALIFIER_HEIGHTVALUES, Bytes.toBytes(infos[4]));
+        put.addColumn(Infos.FAMILY_DEM3, Infos.QUALIFIER_LATMIN, Bytes.toBytes(infos[0]));
+        put.addColumn(Infos.FAMILY_DEM3, Infos.QUALIFIER_LATMAX, Bytes.toBytes(infos[1]));
+        put.addColumn(Infos.FAMILY_DEM3, Infos.QUALIFIER_LONGMIN, Bytes.toBytes(infos[2]));
+        put.addColumn(Infos.FAMILY_DEM3, Infos.QUALIFIER_LONGMAX, Bytes.toBytes(infos[3]));
+        put.addColumn(Infos.FAMILY_DEM3, Infos.QUALIFIER_HEIGHTVALUES, Bytes.toBytes(infos[4]));
 
 
         table.put(put);
