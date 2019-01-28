@@ -9,23 +9,9 @@ import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.util.Tool;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 public class HBaseAdd extends Configured implements Tool, Serializable {
-
-   /* private Connection connection;
-    private Table table;
-
-    public HBaseAdd(){
-        super();
-        try {
-            connection = ConnectionFactory.createConnection(getConf());
-            table = connection.getTable(TableName.valueOf(HBaseInfos.TABLE_NAME));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     @Override
     public int run(String[] infos) throws Exception {
@@ -44,13 +30,4 @@ public class HBaseAdd extends Configured implements Tool, Serializable {
         connection.close();
         return 0;
     }
-/*
-    public void close(){
-        try {
-            table.close();
-            connection.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 }

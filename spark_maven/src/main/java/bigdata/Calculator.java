@@ -36,6 +36,8 @@ public class Calculator implements Serializable{
         return res;
     }
 
+
+    // Only used to test our output localy
     public static void list2png(ArrayList<Integer> heightValues, int length) {
 
         // TYPE_INT_ARGB specifies the image format: 8-bit RGBA packed

@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const logger = require('morgan');
-const port = 4000;
+const port = 3292;
 const hbase = require('hbase');
 const { createImageData, Canvas } = require('canvas');
 
@@ -21,8 +21,11 @@ app.get('/canvas/:z/:x/:y', function (req, res) {
   let x = req.params.x;
   let y = req.params.y;
   let z = 10 - Number(req.params.z);
-
-
+  /*if (z > 1) {
+    const zoomRatio = [1, 2, 2, 3, 3, 5];
+    x = x * Math.floor(2, zoomRatio[z-1]);
+    y = y * Math.floor(2, zoomRatio[z-1]);
+  }*/
   let rowkey = "X" + x + "Y" + y + "Z" + z;
   console.log(rowkey);
   client.table('lgiovannange').row(rowkey).get('dem3:heightvalues', function (err, cell) {
@@ -44,7 +47,7 @@ app.get('/canvas/:z/:x/:y', function (req, res) {
       let heightValues = obj.$.split(', ');
       let i = 0;
       let occur, hv, color;
-      heightValues.forEach(function(element, index) {
+      heightValues.forEach(function (element, index) {
         occur = Number(element.split('x')[0]);
         hv = Number(element.split('x')[1]);
         color = getColor(hv);

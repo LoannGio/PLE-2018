@@ -1,22 +1,14 @@
 package bigdata;
 
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
-import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.input.PortableDataStream;
-import org.apache.spark.rdd.JdbcRDD;
 import org.apache.spark.rdd.RDD;
-import org.apache.hadoop.hbase.TableName;
 
-import org.apache.hadoop.conf.Configuration;
 
-import scala.Tuple2;
 
 import java.util.ArrayList;
 
@@ -33,8 +25,6 @@ public class Main {
 		*/
         int nbTilesXMax = 360;
         int nbTilesYMax = 180;
-
-
         ArrayList<ZoomInfos> zoomInfos = new ArrayList<ZoomInfos>();
         zoomInfos.add(new ZoomInfos(1, nbTilesXMax, nbTilesYMax, 1));
         zoomInfos.add(new ZoomInfos(2, nbTilesXMax / 2, nbTilesYMax / 2, 2));
@@ -61,7 +51,7 @@ public class Main {
         JavaRDD<MyRDDInfos> myRDD;
         ArrayList<MyRDDInfos> infosToParallelize;
 
-        for(int i = 1; i < zoomInfos.size(); i++){
+        for(int i = 3; i < zoomInfos.size(); i++){
             infosToParallelize = new ArrayList<MyRDDInfos>();
             for (int x = 0; x < zoomInfos.get(i).NbTilesX; x++) {
                 for (int y = 0; y < zoomInfos.get(i).NbTilesY; y++) {
@@ -74,24 +64,5 @@ public class Main {
             });
         }
 
-/*
-        myRDD = context.parallelize(infosToParallelize);
-        JavaPairRDD<Integer, MyRDDInfos> sortedRDD = myRDD.mapToPair(RDDinfos -> {
-            int key = RDDinfos.ZoomInfos.ZoomLevel;
-            return new Tuple2<Integer, MyRDDInfos>(key, RDDinfos);
-        });
-        sortedRDD.sortByKey();
-
-        sortedRDD.foreach(tuple -> {
-            System.out.println("X"+tuple._2.X + "Y"+tuple._2.Y + "Z" + tuple._1);
-            ToolRunner.run(HBaseConfiguration.create(), new GenerateAnyZoomLevel(), tuple._2.toStrings());
-        });
-*/
-        /*sortedRDD.foreach(dem3 -> {
-            System.out.println(dem3._2.toStrings()[5]);
-            ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), dem3._2.toStrings());
-        });*/
-
     }
-    //Calculator.Hbase2dem3infos(189/2, 47/2, zoomInfos.get(1));
 }

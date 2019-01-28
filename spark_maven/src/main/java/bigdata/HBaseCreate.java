@@ -28,7 +28,6 @@ public class HBaseCreate extends Configured implements Tool, Serializable {
             final Admin admin = connect.getAdmin();
             HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf(HBaseInfos.TABLE_NAME));
             HColumnDescriptor famDem3 = new HColumnDescriptor(HBaseInfos.FAMILY_DEM3);
-            //famInfos.setInMemory(true);
             tableDescriptor.addFamily(famDem3);
             createOrOverwrite(admin, tableDescriptor);
             admin.close();
