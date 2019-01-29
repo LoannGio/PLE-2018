@@ -6,7 +6,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.rdd.RDD;
+import org.apache.spark.input.PortableDataStream;
 
 
 
@@ -16,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        //ToolRunner.run(HBaseConfiguration.create(), new HBaseCreate(), args);
+        ToolRunner.run(HBaseConfiguration.create(), new HBaseCreate(), args);
 
 		/*
 		Foreach zoomLevel, number of zoomLevel-1 images to create the new one
@@ -35,8 +35,10 @@ public class Main {
 
         SparkConf conf = new SparkConf().setAppName("Projet Spark");
         JavaSparkContext context = new JavaSparkContext(conf);
-        /*JavaPairRDD<String, PortableDataStream> files = context.binaryFiles("hdfs://ripoux:9000/user/raw_data/dem3/");
+        JavaPairRDD<String, PortableDataStream> files = context.binaryFiles(Infos.HDFS_DEM3_RIPOUX);
 
+
+        /* JOB POUR LE NIVEAU DE ZOOM MAXIMAL */
 
         files.map(fileData -> {
             byte[] pixels = fileData._2.toArray();
@@ -47,7 +49,32 @@ public class Main {
             ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), dem3.toStrings());
 
         });
-*/
+
+        /*// NE PAS DÉCOMMENTER - TENTATIVE DE REFACTORING DU CODE QUI A ÉCHOUÉ (ON NE SAIT PAS POURQUOI MAIS LE JOB SE RELANCE AU LIEU DE SE FINIR)
+        Configuration hbaseConf = HBaseConfiguration.create();
+        hbaseConf.set("hbase.zookeeper.quorum", Infos.IP_YOUNG);
+        hbaseConf.set("hbase.mapred.outputtable", new String(Infos.TABLE_NAME));
+        hbaseConf.set("mapreduce.outputformat.class", "org.apache.hadoop.hbase.mapreduce.TableOutputFormat");
+
+        /*JavaPairRDD<String, PortableDataStream> files = context.binaryFiles(Infos.HDFS_DIRECTORY_YOUNG);
+        JavaPairRDD<String, Dem3Infos> dem3RDD = files.mapToPair(stringPortableDataStreamTuple2 -> {
+            byte[] pixels = stringPortableDataStreamTuple2._2.toArray();
+            String filename = stringPortableDataStreamTuple2._1.split("/")[stringPortableDataStreamTuple2._1.split(("/")).length - 1];
+            filename = filename.split("\\.")[0];
+
+            Dem3Infos dem3Infos = new Dem3Infos();
+            dem3Infos.hgt2dem3infos(pixels, filename, zoomInfos.get(0).ZoomLevel);
+
+            return new Tuple2<>(stringPortableDataStreamTuple2._1, dem3Infos);
+        });
+
+        JavaPairRDD<ImmutableBytesWritable, Put> rddToSave = dem3RDD.mapToPair(dem3 -> new Tuple2<ImmutableBytesWritable, Put>(new ImmutableBytesWritable(), dem3._2.getPut()));
+
+        rddToSave.saveAsNewAPIHadoopDataset(hbaseConf);
+        */
+
+        /* JOB POUR LES NIVEAUX DE ZOOM INFÉRIEURS */
+
         JavaRDD<MyRDDInfos> myRDD;
         ArrayList<MyRDDInfos> infosToParallelize;
 
