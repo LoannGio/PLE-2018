@@ -12,6 +12,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class GenerateAnyZoomLevel extends Configured implements Tool, Serializable {
+    public Dem3Infos Dem3;
+
     @Override
     public int run(String[] args) throws Exception {
         int ratio = Integer.valueOf(args[3]);
@@ -86,7 +88,9 @@ public class GenerateAnyZoomLevel extends Configured implements Tool, Serializab
         result.LongMax = imgToAggregate[ratio*ratio-1].LongMax;
         result.RowKey = "X"+x+"Y"+y+"Z"+z;
 
-        return ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), result.toStrings());
+        Dem3 = result;
+        //return ToolRunner.run(HBaseConfiguration.create(), new HBaseAdd(), result.toStrings());
+        return 1;
     }
 
     private ArrayList<String> aggregateHeightValues(Dem3Infos[] imgToAggregate, int ratio, int length){

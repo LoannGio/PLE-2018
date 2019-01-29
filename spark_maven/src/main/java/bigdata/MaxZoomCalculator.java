@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class MaxZoomCalculator extends Calculator{
     private static final int MAX_HEIGHT = 8000;
 
-    public static Dem3Infos hgt2dem3infos(byte[] buffer, String filename, int zoomLevel){
+    public Dem3Infos hgt2dem3infos(byte[] buffer, String filename, int zoomLevel){
         Dem3Infos result;
         int latmin, latmax, longmin, longmax;
         ArrayList<Integer> heightValues = new ArrayList<Integer>();
